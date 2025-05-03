@@ -1,0 +1,129 @@
+/* === GAME BOARD STYLING === */
+
+/* Game board */
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  width: 350px;
+  height: 350px;
+  margin: 20px auto;
+}
+
+/* Cell styling */
+.cell {
+  position: relative;
+  background: var(--bg-dark-trans);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-light);
+  cursor: pointer;
+  transition: all var(--speed-normal);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+  font-weight: bold;
+  color: var(--text-light);
+}
+
+.cell:hover:not(.filled) {
+  background: var(--bg-hover);
+  border-color: var(--border-hover);
+  transform: scale(1.03);
+  box-shadow: 0 0 15px var(--glow-blue);
+}
+
+.cell.x {
+  color: var(--player-x);
+  text-shadow: 0 0 10px var(--glow-blue);
+}
+
+.cell.o {
+  color: var(--player-o);
+  text-shadow: 0 0 10px var(--glow-pink);
+}
+
+.cell.highlight {
+  animation: pulse 1.5s infinite;
+  background: var(--bg-highlight);
+  border-color: var(--neon-purple);
+}
+
+/* Win line */
+.win-line {
+  position: absolute;
+  background: var(--win-line-gradient);
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: 0 0 15px var(--glow-purple);
+  border-radius: var(--radius-sm);
+}
+
+.win-line.horizontal {
+  height: 10px;
+  width: 100%;
+  animation: glowPulse 2s infinite;
+}
+
+.win-line.vertical {
+  width: 10px;
+  height: 100%;
+  animation: glowPulse 2s infinite;
+}
+
+.win-line.diagonal-1 {
+  height: 10px;
+  width: 100%;
+  transform: rotate(45deg) scale(1.4);
+  transform-origin: center;
+  animation: glowPulse 2s infinite;
+}
+
+.win-line.diagonal-2 {
+  height: 10px;
+  width: 100%;
+  transform: rotate(-45deg) scale(1.4);
+  transform-origin: center;
+  animation: glowPulse 2s infinite;
+}
+
+/* Symbol animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px var(--glow-purple);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--glow-purple);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--glow-purple);
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    opacity: 0.7;
+    box-shadow: 0 0 5px var(--glow-purple);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px var(--glow-purple);
+  }
+  100% {
+    opacity: 0.7;
+    box-shadow: 0 0 5px var(--glow-purple);
+  }
+} 

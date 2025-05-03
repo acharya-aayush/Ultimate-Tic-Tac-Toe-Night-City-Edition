@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ultimate Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    h1 { margin-bottom: 5px; }
+    #scoreboard { margin-bottom: 10px; font-size: 18px; }
+    #modeSelector, #controls { margin: 15px; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 5px;
+      justify-content: center;
+    }
+    .mini-board {
+      display: grid;
+      grid-template-columns: repeat(3, 40px);
+      gap: 2px;
+      border: 2px solid #555;
+      padding: 5px;
+    }
+    .cell {
+      width: 40px; height: 40px;
+      background: #f9f9f9;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mini-board.won { background-color: #c3f9c3; }
+    .mini-board.active { border-color: #00f; }
+  </style>
+</head>
+<body>
+  <h1>Ultimate Tic Tac Toe</h1>
+  <div id="scoreboard">X: 0 | O: 0 | Draws: 0</div>
+  <div id="modeSelector">
+    <button onclick="startGame('ai')">Play vs AI</button>
+    <button onclick="startGame('human')">2 Player</button>
+  </div>
+  <div id="mainBoard" class="board" style="display:none;"></div>
+  <div id="controls" style="display:none;">
+    <button onclick="resetGame()">🔁 Restart</button>
+  </div>
+
+  <script>
+    let gameMode = 'ai', currentPlayer = 'X', nextBoard = -1;
+    let boards = [], boardWinners = Array(9).fill('');
+    let score = { X: 0, O: 0, draw: 0 };
+    const mainBoard = document.getElementById('mainBoard');
+
+    function startGame(mode) {
+      gameMode = mode;
+      document.getElementById('modeSelector').style.display = 'none';
+      document.getElementById('controls').style.display = 'block';
+      mainBoard.style.display = 'grid';
+      resetGame();
+    }
+
+    function resetGame() {
+      currentPlayer = 'X'; nextBoard = -1;
+      boardWinners = Array(9).fill('');
+      mainBoard.innerHTML = ''; boards = [];
+
+      for (let i = 0; i < 9; i++) {
+        const mini = document.createElement('div');
+        mini.className = 'mini-board'; mini.dataset.board = i;
+        const cells = [];
+        for (let j = 0; j < 9; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell'; cell.dataset.index = j;
+          cell.onclick = () => handleMove(i, j, cell);
+          mini.appendChild(cell); cells.push(cell);
+        }
+        boards.push({ element: mini, cells, winner: '' });
+        mainBoard.appendChild(mini);
+      }
+      updateHighlight();
+    }
+
+    function handleMove(bi, ci, cell) {
+      if (boardWinners[bi] || cell.textContent || (nextBoard !== -1 && bi !== nextBoard)) return;
+      cell.textContent = currentPlayer;
+
+      if (checkMiniWin(boards[bi], currentPlayer)) {
+        boards[bi].element.classList.add('won');
+        boardWinners[bi] = currentPlayer;
+        if (checkGameWin(currentPlayer)) {
+          alert(`${currentPlayer} wins!`);
+          score[currentPlayer]++;
+          updateScore();
+          resetGame();
+          return;
+        }
+      } else if (boards[bi].cells.every(c => c.textContent)) {
+        boardWinners[bi] = 'D';
+      }
+
+      nextBoard = boardWinners[ci] ? -1 : ci;
+      if (boardWinners.every(w => w)) {
+        alert("Draw!");
+        score.draw++;
+        updateScore();
+        resetGame();
+        return;
+      }
+
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      updateHighlight();
+      if (gameMode === 'ai' && currentPlayer === 'O') setTimeout(aiMove, 300);
+    }
+
+    function aiMove() {
+      let validBoards = nextBoard === -1 ? boards.map((b, i) => boardWinners[i] ? null : i).filter(i => i !== null) : [nextBoard];
+      for (let bi of validBoards) {
+        let winMove = findBestMove(bi, 'O'); if (winMove) return handleMove(bi, winMove, boards[bi].cells[winMove]);
+      }
+      for (let bi of validBoards) {
+        let blockMove = findBestMove(bi, 'X'); if (blockMove) return handleMove(bi, blockMove, boards[bi].cells[blockMove]);
+      }
+      let choiceBoard = validBoards[Math.floor(Math.random() * validBoards.length)];
+      let empty = boards[choiceBoard].cells.map((c, i) => c.textContent === '' ? i : null).filter(i => i !== null);
+      let center = [4], corners = [0,2,6,8];
+      let move = center.find(i => empty.includes(i)) || corners.find(i => empty.includes(i)) || empty[0];
+      handleMove(choiceBoard, move, boards[choiceBoard].cells[move]);
+    }
+
+    function findBestMove(bi, player) {
+      const g = boards[bi].cells.map(c => c.textContent);
+      const winLines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      for (let line of winLines) {
+        let [a,b,c] = line.map(i => g[i]);
+        if ([a,b,c].filter(x => x === player).length === 2 && [a,b,c].includes('')) {
+          return line[[a,b,c].indexOf('')];
+        }
+      }
+      return null;
+    }
+
+    function checkMiniWin(board, p) {
+      const g = board.cells.map(c => c.textContent);
+      const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      return win.some(line => line.every(i => g[i] === p));
+    }
+
+    function checkGameWin(p) {
+      const w = boardWinners;
+      const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      return win.some(line => line.every(i => w[i] === p));
+    }
+
+    function updateHighlight() {
+      boards.forEach((b, i) => {
+        b.element.classList.remove('active');
+        if ((nextBoard === -1 || nextBoard === i) && !boardWinners[i])
+          b.element.classList.add('active');
+      });
+    }
+
+    function updateScore() {
+      document.getElementById('scoreboard').textContent =
+        `X: ${score.X} | O: ${score.O} | Draws: ${score.draw}`;
+    }
+  </script>
+</body>
+</html>

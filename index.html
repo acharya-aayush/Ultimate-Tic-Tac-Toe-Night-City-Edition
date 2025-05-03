@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Night City Ultimate Tic Tac Toe</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+  <script>
+    // Prevent ServiceWorker errors 
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register = function() {
+        return Promise.reject(new Error("ServiceWorker disabled"));
+      };
+    }
+    
+    // Prevent notification errors
+    if ('Notification' in window) {
+      Notification.requestPermission = function() {
+        return Promise.reject(new Error("Notifications disabled"));
+      };
+    }
+  </script>
+</head>
+<body>
+  <div class="cyberpunk-container">
+    <!-- Digital grid background -->
+    <div class="ambient-bg"></div>
+    <div class="digital-grid"></div>
+    <div class="circuit-lines" id="circuitLines"></div>
+    
+    <!-- Scanner overlay effects -->
+    <div class="scanner-lines"></div>
+    <div class="glitch-overlay"></div>
+    
+    <!-- Game logo and header -->
+    <header class="game-header">
+      <div class="header-frame">
+        <div class="header-corner tl"></div>
+        <div class="header-corner tr"></div>
+        <div class="header-corner bl"></div>
+        <div class="header-corner br"></div>
+        <img src="assets/images/cyberpunklogo1.png" alt="Cyberpunk Logo" class="game-logo">
+        <h1>ULTIMATE TIC TAC TOE</h1>
+        <div class="subtitle">NIGHT CITY EDITION</div>
+        <div class="developer-credit">
+          <span id="dev-credit" class="cyberpunk-text">Developed by Aayush Acharya</span>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Scoreboard container hidden - now using side panels instead -->
+    <div class="scoreboard-container" style="display:none;">
+      <!-- Content hidden as we're using side panels instead -->
+    </div>
+    
+    <!-- Player setup screen -->
+    <div id="players-setup" class="players-container">
+      <div class="player-setup">
+        <div class="cyber-card">
+          <div class="card-corner tl"></div>
+          <div class="card-corner tr"></div>
+          <div class="card-corner bl"></div>
+          <div class="card-corner br"></div>
+          <div class="card-top">
+            <div class="card-bg"></div>
+            <div class="player-image">
+              <img src="assets/images/jspfp1.png" alt="Johnny Silverhand" class="avatar-preview" id="player1AvatarPreview">
+              <div class="marker">X</div>
+            </div>
+          </div>
+          <div class="card-info">
+            <input type="text" id="player1Name" class="player-name-input" placeholder="PLAYER 1" maxlength="12">
+            <div class="character-select-label">SELECT CHARACTER</div>
+            <div class="character-select">
+              <button class="avatar-button" data-player="1" data-avatar="johnny1" data-name="Johnny Silverhand">
+                <img src="assets/images/jspfp1.png" alt="Johnny Silverhand" class="avatar-thumb">
+                <div class="character-name">Johnny</div>
+              </button>
+              <button class="avatar-button" data-player="1" data-avatar="judy1" data-name="Judy Alvarez">
+                <img src="assets/images/judypfp1.png" alt="Judy" class="avatar-thumb">
+                <div class="character-name">Judy</div>
+              </button>
+              <button class="avatar-button" data-player="1" data-avatar="panam1" data-name="Panam Palmer">
+                <img src="assets/images/panampfp1.png" alt="Panam" class="avatar-thumb">
+                <div class="character-name">Panam</div>
+              </button>
+              <button class="avatar-button" data-player="1" data-avatar="lucy1" data-name="Lucy">
+                <img src="assets/images/lucypfp1.png" alt="Lucy" class="avatar-thumb">
+                <div class="character-name">Lucy</div>
+              </button>
+              <button class="avatar-button" data-player="1" data-avatar="david1" data-name="David Martinez">
+                <img src="assets/images/davidpfp1.png" alt="David" class="avatar-thumb">
+                <div class="character-name">David</div>
+              </button>
+              <button class="avatar-button" data-player="1" data-avatar="rebecca1" data-name="Rebecca">
+                <img src="assets/images/rebeccapfp1.png" alt="Rebecca" class="avatar-thumb">
+                <div class="character-name">Rebecca</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="player-setup">
+        <div class="cyber-card">
+          <div class="card-corner tl"></div>
+          <div class="card-corner tr"></div>
+          <div class="card-corner bl"></div>
+          <div class="card-corner br"></div>
+          <div class="card-top">
+            <div class="card-bg"></div>
+            <div class="player-image">
+              <img src="assets/images/lucypfp1.png" alt="Lucy" class="avatar-preview" id="player2AvatarPreview">
+              <div class="marker">O</div>
+            </div>
+          </div>
+          <div class="card-info">
+            <input type="text" id="player2Name" class="player-name-input" placeholder="PLAYER 2" maxlength="12">
+            <div class="character-select-label">SELECT CHARACTER</div>
+            <div class="character-select">
+              <button class="avatar-button" data-player="2" data-avatar="johnny2" data-name="Johnny Silverhand">
+                <img src="assets/images/jspfp2.png" alt="Johnny Silverhand" class="avatar-thumb">
+                <div class="character-name">Johnny</div>
+              </button>
+              <button class="avatar-button" data-player="2" data-avatar="judy2" data-name="Judy Alvarez">
+                <img src="assets/images/judypfp2.png" alt="Judy" class="avatar-thumb">
+                <div class="character-name">Judy</div>
+              </button>
+              <button class="avatar-button" data-player="2" data-avatar="panam2" data-name="Panam Palmer">
+                <img src="assets/images/panampfp2.png" alt="Panam" class="avatar-thumb">
+                <div class="character-name">Panam</div>
+              </button>
+              <button class="avatar-button" data-player="2" data-avatar="lucy2" data-name="Lucy">
+                <img src="assets/images/lucypfp2.png" alt="Lucy" class="avatar-thumb">
+                <div class="character-name">Lucy</div>
+              </button>
+              <button class="avatar-button" data-player="2" data-avatar="david2" data-name="David Martinez">
+                <img src="assets/images/davidpfp2.png" alt="David" class="avatar-thumb">
+                <div class="character-name">David</div>
+              </button>
+              <button class="avatar-button" data-player="2" data-avatar="rebecca2" data-name="Rebecca">
+                <img src="assets/images/rebeccapfp2.png" alt="Rebecca" class="avatar-thumb">
+                <div class="character-name">Rebecca</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Game mode selection -->
+    <div id="modeSelector" class="controls">
+      <div class="mode-buttons">
+        <button class="cyber-button main-button" id="humanGameButton">
+          <span class="button-content">2 PLAYERS</span>
+        </button>
+        <button class="cyber-button main-button" id="aiGameButton">
+          <span class="button-content">VS AI</span>
+        </button>
+      </div>
+      
+      <!-- AI SELECTOR -->
+      <div class="ai-selector">
+        <h3>Select AI Opponent</h3>
+        <div class="ai-options">
+          <button class="ai-option" data-ai="royce">
+            <img src="assets/ai/royce.png" alt="Royce">
+            <span>Royce</span>
+          </button>
+          <button class="ai-option" data-ai="goro">
+            <img src="assets/ai/goro.png" alt="Goro">
+            <span>Goro</span>
+          </button>
+          <button class="ai-option selected" data-ai="adamSmasher">
+            <img src="assets/ai/adamSmasher.png" alt="Adam Smasher">
+            <span>Adam Smasher</span>
+          </button>
+          <button class="ai-option locked" id="aayushAIOption" data-ai="aayushAcharya" style="display: none;">
+            <img src="assets/ai/aayush.png" alt="AAYUSH">
+            <span>AAYUSH</span>
+            <div class="lock-overlay">
+              <div class="lock-icon">🔒</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <!-- END AI SELECTOR -->
+      
+      <div id="aiDifficultyContainer" class="dropdown-container" style="display:none;">
+        <div class="difficulty-label">Select AI Opponent</div>
+        <div class="ai-opponents">
+          <button class="cyber-button ai-button" data-difficulty="easy">Royce<span class="difficulty-tag">EASY</span></button>
+          <button class="cyber-button ai-button" data-difficulty="medium">Goro<span class="difficulty-tag">MEDIUM</span></button>
+          <button class="cyber-button ai-button selected" data-difficulty="hard">Adam Smasher<span class="difficulty-tag">HARD</span></button>
+          <button class="cyber-button ai-button" data-difficulty="extreme">Aayush Acharya<span class="difficulty-tag">EXTREME</span></button>
+        </div>
+        <input type="hidden" id="aiDifficultySelector" value="hard">
+      </div>
+    </div>
+    
+    <!-- Game layout with side avatars and main board -->
+    <div class="game-layout" id="gameLayout" style="display:none;">
+      <!-- Player 1 side avatar -->
+      <div class="player-side left">
+        <div class="side-avatar player1">
+          <img src="assets/images/jspfp1.png" id="sideAvatar1">
+          <div class="side-marker player1">X</div>
+        </div>
+        <div class="side-name" id="sideName1">PLAYER 1</div>
+      </div>
+      
+      <!-- Main game board -->
+      <div id="mainBoard" class="board"></div>
+      
+      <!-- Player 2 side avatar -->
+      <div class="player-side right">
+        <div class="side-avatar player2">
+          <img src="assets/images/adamsmasherpfp.png" id="sideAvatar2">
+          <div class="side-marker player2">O</div>
+        </div>
+        <div class="side-name" id="sideName2">PLAYER 2</div>
+      </div>
+    </div>
+    
+    <!-- Winner display -->
+    <div id="winner-display" class="winner-display" style="display:none;">
+      <div class="hologram-text" id="winnerText">
+        <div class="slice-glitch">
+          <span class="text-content glitchable-text">
+            <span id="winner-name"></span> <span class="highlight">WINS</span>
+          </span>
+          <div class="slice"></div>
+          <div class="slice"></div>
+          <div class="slice"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Game controls -->
+    <div id="controls" class="controls" style="display:none;">
+      <button class="cyber-button" id="continueButton">
+        <span class="button-content">CONTINUE</span>
+      </button>
+      <button class="cyber-button" id="newMatchButton">
+        <span class="button-content">NEW MATCH</span>
+      </button>
+    </div>
+    
+    <!-- Sound controls -->
+    <div class="sound-controls">
+      <button id="toggleMusic" class="icon-button">
+        <span class="button-icon">🎵</span>
+      </button>
+      <button id="toggleSfx" class="icon-button">
+        <span class="button-icon">🔊</span>
+      </button>
+      <button id="nextTrack" class="icon-button">
+        <span class="button-icon">⏭️</span>
+      </button>
+      <button id="exportMoveLog" class="icon-button" title="Export AI move log">
+        <span class="button-icon">📊</span>
+      </button>
+      <button id="emergencyReset" class="icon-button emergency-button">
+        <span class="button-icon">🔄</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Move log export dialog -->
+  <div id="moveLogDialog" class="modal-dialog" style="display:none;">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h3>Export Move Log</h3>
+        <button class="close-button">×</button>
+      </div>
+      <div class="dialog-body">
+        <p>Export the move log data for analysis or training:</p>
+        <div class="export-options">
+          <button id="exportJSON" class="cyber-button small-button">
+            <span class="button-content">JSON Format</span>
+          </button>
+          <button id="exportCSV" class="cyber-button small-button">
+            <span class="button-content">CSV Format</span>
+          </button>
+        </div>
+        <div class="log-preview">
+          <h4>Recent Moves:</h4>
+          <pre id="moveLogPreview" class="log-preview-content"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Aayush AI unlock notification -->
+  <div id="unlockNotification" class="unlock-notification" style="display:none;">
+    <div class="notification-content">
+      <div class="unlock-icon">🔓</div>
+      <h3>Aayush AI Unlocked!</h3>
+      <p id="unlockMessage">The Architect watches you now...</p>
+      <button id="closeUnlockNotification" class="cyber-button small-button">
+        <span class="button-content">Continue</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
+  <script>
+    // Compatibility layer to ensure all functions are accessible
+    window.handleModuleLoad = function() {
+      console.log("Setting up game event handlers");
+      
+      // Set up event handlers for game controls
+      document.getElementById('humanGameButton').addEventListener('click', function() {
+        if (typeof window.startGame === 'function') {
+          window.startGame('human');
+        } else {
+          console.error("startGame function not found");
+        }
+      });
+      
+      document.getElementById('aiGameButton').addEventListener('click', function() {
+        // Get selected AI option
+        const selectedAI = document.querySelector('.ai-option.selected');
+        if (selectedAI) {
+          const aiType = selectedAI.dataset.ai;
+          const difficultyMap = {
+            'royce': 'easy',
+            'goro': 'medium',
+            'adamSmasher': 'hard',
+            'aayushAcharya': 'extreme'
+          };
+          const difficulty = difficultyMap[aiType] || 'hard';
+          
+          // Call selectAIDifficulty with the mapped difficulty
+          if (typeof window.selectAIDifficulty === 'function') {
+            window.selectAIDifficulty(difficulty);
+          } else {
+            console.error("selectAIDifficulty function not found");
+          }
+        } else {
+          // Fallback to default difficulty if no AI is selected
+          if (typeof window.selectAIDifficulty === 'function') {
+            window.selectAIDifficulty('hard');
+          } else {
+            console.error("selectAIDifficulty function not found");
+          }
+        }
+      });
+      
+      // Set up continue, new match, and emergency reset buttons
+      document.getElementById('continueButton').addEventListener('click', function() {
+        if (typeof window.continueGame === 'function') {
+          window.continueGame();
+        } else {
+          console.error("continueGame function not found");
+        }
+      });
+      
+      document.getElementById('newMatchButton').addEventListener('click', function() {
+        if (typeof window.backToSetup === 'function') {
+          window.backToSetup();
+        } else {
+          console.error("backToSetup function not found");
+        }
+      });
+      
+      document.getElementById('emergencyReset').addEventListener('click', function() {
+        if (typeof window.emergencyReset === 'function') {
+          window.emergencyReset();
+        } else {
+          console.error("emergencyReset function not found");
+        }
+      });
+      
+      // Set up next track button
+      document.getElementById('nextTrack').addEventListener('click', function() {
+        if (typeof window.nextTrack === 'function') {
+          window.nextTrack();
+          console.log("Skipping to next music track");
+        } else {
+          console.error("nextTrack function not found");
+        }
+      });
+      
+      // Set up sound controls
+      document.getElementById('toggleMusic').addEventListener('click', function() {
+        if (typeof window.toggleMusic === 'function') {
+          window.toggleMusic();
+        } else {
+          console.error("toggleMusic function not found");
+        }
+      });
+      
+      document.getElementById('toggleSfx').addEventListener('click', function() {
+        if (typeof window.toggleSFX === 'function') {
+          window.toggleSFX();
+        } else {
+          console.error("toggleSFX function not found");
+        }
+      });
+      
+      // Set up move log export dialog
+      document.getElementById('exportMoveLog').addEventListener('click', function() {
+        const dialog = document.getElementById('moveLogDialog');
+        if (dialog) {
+          // Update preview content
+          updateMoveLogPreview();
+          dialog.style.display = 'flex';
+          
+          // Play UI sound if available
+          if (window.audioSystem) {
+            window.audioSystem.playSound('ui', 'click');
+          }
+        }
+      });
+      
+      // Export buttons
+      document.getElementById('exportJSON').addEventListener('click', function() {
+        const jsonContent = convertToJSON();
+        downloadFile(jsonContent, 'game_moves.json', 'application/json');
+      });
+      
+      document.getElementById('exportCSV').addEventListener('click', function() {
+        const csvContent = convertToCSV();
+        downloadFile(csvContent, 'game_moves.csv', 'text/csv');
+      });
+      
+      // Close dialog
+      document.querySelector('#moveLogDialog .close-button').addEventListener('click', function() {
+        document.getElementById('moveLogDialog').style.display = 'none';
+      });
+      
+      // Set up avatar buttons
+      document.querySelectorAll('.avatar-button').forEach(button => {
+        button.addEventListener('click', function() {
+          const player = this.dataset.player;
+          const avatar = this.dataset.avatar;
+          const characterName = this.dataset.name || (window.characterNames ? window.characterNames[avatar] : '');
+          
+          if (player === '1') {
+            window.player1Avatar = avatar;
+            window.player1Character = avatar;
+            window.player1Name = characterName;
+            
+            // Update player preview
+            const preview = document.getElementById('player1AvatarPreview');
+            if (preview) preview.src = window.avatarPaths ? window.avatarPaths[avatar] : '';
+            
+            // Update player name input field with character name
+            const nameInput = document.getElementById('player1Name');
+            if (nameInput) nameInput.value = characterName;
+            
+            // Flash the preview
+            const playerImage = preview ? preview.closest('.player-image') : null;
+            if (playerImage) {
+              playerImage.classList.add('selected');
+              setTimeout(() => playerImage.classList.remove('selected'), 500);
+            }
+          } else {
+            window.player2Avatar = avatar;
+            window.player2Character = avatar;
+            window.player2Name = characterName;
+            
+            // Update player preview
+            const preview = document.getElementById('player2AvatarPreview');
+            if (preview) preview.src = window.avatarPaths ? window.avatarPaths[avatar] : '';
+            
+            // Update player name input field with character name
+            const nameInput = document.getElementById('player2Name');
+            if (nameInput) nameInput.value = characterName;
+            
+            // Flash the preview
+            const playerImage = preview ? preview.closest('.player-image') : null;
+            if (playerImage) {
+              playerImage.classList.add('selected');
+              setTimeout(() => playerImage.classList.remove('selected'), 500);
+            }
+          }
+          
+          // Add active class
+          document.querySelectorAll(`.avatar-button[data-player="${player}"]`).forEach(btn => {
+            btn.classList.remove('active');
+          });
+          this.classList.add('active');
+          
+          // Play UI sound
+          if (window.audioSystem) {
+            window.audioSystem.playSound('ui', 'click');
+          }
+        });
+      });
+      
+      // Set default active avatars
+      setTimeout(() => {
+        const player1Avatar = document.querySelector('.avatar-button[data-player="1"][data-avatar="johnny1"]');
+        const player2Avatar = document.querySelector('.avatar-button[data-player="2"][data-avatar="lucy2"]');
+        
+        if (player1Avatar) {
+          player1Avatar.classList.add('active');
+          player1Avatar.click();
+        }
+        
+        if (player2Avatar) {
+          player2Avatar.classList.add('active');
+          player2Avatar.click();
+        }
+      }, 300);
+      
+      // Set up AI opponent selection
+      document.querySelectorAll('.ai-option').forEach(button => {
+        button.addEventListener('click', function() {
+          // Update selected state
+          document.querySelectorAll('.ai-option').forEach(btn => {
+            btn.classList.remove('selected');
+          });
+          this.classList.add('selected');
+          
+          // Get AI data
+          const aiType = this.dataset.ai;
+          
+          // Map AI types to difficulty levels
+          const difficultyMap = {
+            'royce': 'easy',
+            'goro': 'medium',
+            'adamSmasher': 'hard',
+            'aayushAcharya': 'extreme'
+          };
+          
+          // Select corresponding difficulty
+          const difficulty = difficultyMap[aiType] || 'hard';
+          
+          // Update hidden input value
+          document.getElementById('aiDifficultySelector').value = difficulty;
+          
+          // Play UI sound if available
+          if (window.audioSystem) {
+            window.audioSystem.playSound('ui', 'click');
+          }
+          
+          // If selectAIDifficulty function exists, call it
+          if (typeof window.selectAIDifficulty === 'function') {
+            window.selectAIDifficulty(difficulty);
+          }
+        });
+      });
+    };
+    function playUnlockAnimation() {
+      console.log("Unlock animation started"); // Debugging line
+      // Create unlock sequence container
+      const unlockSequence = document.createElement('div');
+      unlockSequence.className = 'unlock-sequence';
+      
+      // Create matrix background
+      const matrixBg = document.createElement('div');
+      matrixBg.className = 'matrix-bg';
+      unlockSequence.appendChild(matrixBg);
+      
+      // Create Aayush icon container
+      const aayushIcon = document.createElement('div');
+      aayushIcon.className = 'aayush-icon';
+      const iconImg = document.createElement('img');
+      iconImg.src = 'assets/aayush.jpg';  // Ensure this path is correct
+      aayushIcon.appendChild(iconImg);
+      unlockSequence.appendChild(aayushIcon);
+      
+      // Create glitch text
+      const glitchText = document.createElement('div');
+      glitchText.className = 'glitch-text';
+      glitchText.textContent = 'UNLOCKING AAYUSH AI';
+      unlockSequence.appendChild(glitchText);
+      
+      // Create progress bar
+      const progressBar = document.createElement('div');
+      progressBar.className = 'progress-bar';
+      const progressFill = document.createElement('div');
+      progressFill.className = 'progress-fill';
+      progressBar.appendChild(progressFill);
+      unlockSequence.appendChild(progressBar);
+      
+      // Create skip text
+      const skipText = document.createElement('div');
+      skipText.className = 'skip-text';
+      skipText.textContent = 'Click 3 times to skip';
+      unlockSequence.appendChild(skipText);
+      
+      // Add to body
+      document.body.appendChild(unlockSequence);
+      console.log("Unlock sequence added to the DOM"); // Debugging line
+      
+      // Stop background music
+      if (bgMusic) {
+          bgMusic.pause();
+      }
+      
+      // Play unlock sound
+      unlockAudio = new Audio('assets/audio/aayushunlock.mp3'); // Use your existing sound file
+      unlockAudio.play().catch(error => console.log('Audio play failed:', error));
+      
+      // Handle skip functionality
+      let unlockClickCount = 0;
+      setTimeout(() => {
+          unlockSequence.classList.add('skippable');
+          unlockSequence.addEventListener('click', () => {
+              unlockClickCount++;
+              if (unlockClickCount >= 3) {
+                  completeUnlock(unlockSequence);
+              }
+          });
+      }, 3000);
+      
+      // Auto-complete after animation
+      setTimeout(() => completeUnlock(unlockSequence), 17000);
+    }
+
+    function completeUnlock(unlockSequence) {
+        // Stop unlock sound
+        if (unlockAudio) {
+            unlockAudio.pause();
+            unlockAudio.currentTime = 0;
+        }
+        
+        // Resume background music if it exists
+        if (bgMusic) {
+            bgMusic.play().catch(error => console.log('Background music play failed:', error));
+        }
+        
+        // Remove unlock sequence
+        document.body.removeChild(unlockSequence);
+    }
+    // Function to update the move log preview in the export dialog
+    function updateMoveLogPreview() {
+      const previewElement = document.getElementById('moveLogPreview');
+      if (!previewElement) return;
+      
+      let previewContent = '';
+      
+      // Check if we have move log data
+      if (window.aayushMoveLog && window.aayushMoveLog.length > 0) {
+        // Show the last 5 moves or all if less than 5
+        const moveCount = window.aayushMoveLog.length;
+        const startIndex = Math.max(0, moveCount - 5);
+        
+        for (let i = startIndex; i < moveCount; i++) {
+          const move = window.aayushMoveLog[i];
+          
+          // Format board and cell indices for display
+          const boardRow = Math.floor(move.boardFrom / 3);
+          const boardCol = move.boardFrom % 3;
+          const cellRow = move.cellChosen ? Math.floor(move.cellChosen / 3) : '?';
+          const cellCol = move.cellChosen ? move.cellChosen % 3 : '?';
+          
+          previewContent += `Move ${move.moveNumber}: ${move.action}\n`;
+          previewContent += `Board (${boardRow},${boardCol}) Cell (${cellRow},${cellCol})\n`;
+          previewContent += `Reason: ${move.reason}\n`;
+          previewContent += `Score: ${move.score}/10\n\n`;
+        }
+      } else {
+        previewContent = "No move data available yet.\nPlay against Aayush AI to generate move data.";
+      }
+      
+      previewElement.textContent = previewContent;
+    }
+
+    function downloadFile(content, fileName, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url); // Clean up
+    }
+
+    function convertToCSV() {
+        const headers = ['Move Number', 'Player Name', 'Opponent Name', 'Board Index', 'Cell Index', 'Marker', 'Timestamp'];
+        const rows = gameMoveLogs.map(move => [
+            move.moveNumber,
+            move.playerName,
+            move.opponentName,
+            move.boardIndex,
+            move.cellIndex,
+            move.marker,
+            move.timestamp
+        ]);
+
+        // Combine headers and rows into a single CSV string
+        return [headers, ...rows].map(row => row.join(',')).join('\n');
+    }
+
+    function convertToJSON() {
+        return JSON.stringify(gameMoveLogs, null, 2); // Pretty print with 2 spaces
+    }
+
+    let gameMoveLogs = []; // Array to hold all game moves
+
+    function logMove(playerName, boardIndex, cellIndex, marker, opponentName) {
+        const move = {
+            playerName,
+            opponentName,
+            boardIndex,
+            cellIndex,
+            marker,
+            timestamp: new Date().toISOString(),
+            moveNumber: gameMoveLogs.length + 1 // Incremental move number
+        };
+        gameMoveLogs.push(move);
+    }
+  </script>
+  <script src="script.js" type="module"></script>
+  <button onclick="playUnlockAnimation()">Test Unlock Animation</button>
+</body>
+</html> 

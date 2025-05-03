@@ -1,0 +1,262 @@
+/* === CYBERPUNK 2077 THEME VARIABLES === */
+:root {
+  /* Core colors */
+  --bg-dark: #0C0C14;
+  --bg-darker: #06070D;
+  --bg-accent: #151525;
+  
+  /* Night City neon colors */
+  --neon-blue: #05D9E8;
+  --neon-yellow: #FDFE03;
+  --neon-magenta: #FF2A6D;
+  --neon-red: #FF003C;
+  --neon-violet: #8B54FF;
+  
+  /* Interface colors */
+  --text: #FFFFFF;
+  --text-dim: rgba(255, 255, 255, 0.7);
+  --text-cyber: #D6EDF0;
+  --border-light: rgba(255, 255, 255, 0.15);
+  --border-accent: rgba(5, 217, 232, 0.4);
+  --shadow-blue: rgba(5, 217, 232, 0.3);
+  --shadow-yellow: rgba(253, 254, 3, 0.3);
+  --shadow-red: rgba(255, 0, 60, 0.3);
+  
+  /* Animation speeds */
+  --speed-fast: 0.2s;
+  --speed-normal: 0.4s;
+  --speed-slow: 0.8s;
+  
+  /* UI Dimensions */
+  --border-width: 2px;
+  --corner-size: 10px;
+  --frame-padding: 15px;
+  --card-radius: 4px;
+}
+
+/* === RESET & BASE STYLES === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 400;
+  background-color: var(--bg-dark);
+  color: var(--text);
+  text-align: center;
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* === MAIN CONTAINER === */
+.cyberpunk-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === BASE STYLES === */
+
+/* Import variables and fonts */
+@import 'variables.css';
+@import 'fonts.css';
+
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margin and padding */
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+figure,
+figcaption,
+blockquote,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
+}
+
+/* Set core body defaults */
+body {
+  min-height: 100vh;
+  scroll-behavior: smooth;
+  text-rendering: optimizeSpeed;
+  line-height: var(--line-height-normal);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* Make images easier to work with */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Inherit fonts for inputs and buttons */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Remove list styles on ul, ol elements */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Basic link styling */
+a {
+  text-decoration: none;
+  color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-secondary);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--spacing-4);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+}
+
+h5 {
+  font-size: var(--font-size-lg);
+}
+
+h6 {
+  font-size: var(--font-size-md);
+}
+
+/* Paragraphs */
+p {
+  margin-bottom: var(--spacing-4);
+}
+
+/* Small text */
+small {
+  font-size: var(--font-size-sm);
+}
+
+/* Default button styling */
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Focus outline */
+:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Code and pre */
+code, pre {
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+  background-color: var(--color-bg-alt);
+  border-radius: var(--border-radius-md);
+}
+
+code {
+  padding: 0.125rem 0.25rem;
+}
+
+pre {
+  padding: var(--spacing-4);
+  overflow-x: auto;
+  margin-bottom: var(--spacing-4);
+}
+
+/* Horizontal rule */
+hr {
+  border: 0;
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--spacing-6) 0;
+}
+
+/* Forms */
+input, textarea, select {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-bg);
+  width: 100%;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-primary);
+}
+
+label {
+  display: block;
+  margin-bottom: var(--spacing-2);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Remove animations for people who've turned them off */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+} 

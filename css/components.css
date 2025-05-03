@@ -1,0 +1,195 @@
+/* === UI COMPONENTS === */
+
+/* Buttons */
+.btn {
+  background: var(--bg-button);
+  color: var(--text-light);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all var(--speed-normal);
+  margin: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  background: var(--bg-button-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 220, 255, 0.2);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--accent-gradient);
+  color: var(--text-dark);
+  font-weight: bold;
+  box-shadow: 0 0 8px var(--glow-blue);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 15px var(--glow-blue);
+}
+
+/* Player indicator */
+.player-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: var(--bg-dark-trans);
+  border: var(--border-width) solid var(--border-light);
+}
+
+/* Score panel */
+.score-panel {
+  min-width: 100px;
+  text-align: center;
+  padding: 8px 15px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-darker);
+  border: var(--border-width) solid var(--border-color);
+  position: relative;
+}
+
+.score {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--text-light);
+  text-shadow: 0 0 10px var(--shadow-blue);
+}
+
+.player-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+  color: var(--text-muted);
+}
+
+/* Player types */
+.player-type {
+  display: flex;
+  margin: 10px;
+  padding: 10px 15px;
+  border-radius: var(--radius-md);
+  background: var(--bg-dark-trans);
+  border: var(--border-width) solid var(--border-light);
+  cursor: pointer;
+  transition: all var(--speed-normal);
+}
+
+.player-type:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+.player-type.active {
+  background: var(--accent-gradient);
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 15px var(--glow-blue);
+}
+
+/* Status message */
+.status-message {
+  margin: 15px 0;
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: var(--bg-dark-trans);
+  border: var(--border-width) solid var(--border-light);
+  color: var(--text-light);
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px 25px;
+  background: var(--bg-dark);
+  border: var(--border-width) solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+  color: var(--text-light);
+  font-size: 1rem;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity var(--speed-normal);
+}
+
+.notification.show {
+  opacity: 1;
+}
+
+/* AI Difficulty Selection */
+.dropdown-container {
+  margin: 12px 0;
+  padding: 10px;
+  background: rgba(17, 25, 40, 0.75);
+  border: 1px solid var(--border-neon);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.difficulty-label {
+  color: var(--text-primary);
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-align: center;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.ai-opponents {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ai-button {
+  position: relative;
+  min-width: 120px;
+  padding: 6px 12px;
+  font-size: 14px;
+  background: rgba(30, 38, 65, 0.7);
+  transition: all 0.2s ease;
+}
+
+.ai-button:hover {
+  transform: translateY(-2px);
+  background: rgba(50, 65, 110, 0.8);
+}
+
+.ai-button.selected {
+  background: rgba(0, 150, 150, 0.6);
+  box-shadow: 0 0 15px rgba(0, 200, 200, 0.5);
+}
+
+.difficulty-tag {
+  position: absolute;
+  bottom: -6px;
+  right: 5px;
+  font-size: 9px;
+  padding: 2px 4px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 2px;
+  color: var(--text-secondary);
+  opacity: 0.8;
+} 
