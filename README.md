@@ -76,4 +76,4 @@ js/        - The evil code that makes AI beat you
 
 ---
 
-*"In Night City, the only difference between winners and losers is who can play Ultimate Tic Tac Toe better."*
+*"In Night City, the only difference between winners and losers is who can play Ultimate Tic Tac Toe better.."*
