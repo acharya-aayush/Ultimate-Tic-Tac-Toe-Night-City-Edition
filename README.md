@@ -1,7 +1,7 @@
 # Ultimate Tic Tac Toe: Night City Edition
 
 ## What is this?
-Step into a futuristic gaming realm where luminous deities engage in intricate 4D Tic Tac Toe matches, while you strive to maintain your dignity. This is not your typical childhood game of Xs and Os. It's Ultimate Tic Tac Toe, infused with cyberpunk elements and operated by a sophisticated AI that can outmaneuver you.
+Step into a futuristic gaming realm where luminous deities engage in intricate 4D Tic Tac Toe matches, while you strive to maintain your dignity. This is not your typical childhood game of Xs and Os. It's Ultimate Tic Tac Toe, infused with cyberpunk elements and operated by a sophisticated AI that can outmaneuver you .
 
 ## What Makes It Engaging?
 Have you ever experienced playing nine Tic Tac Toe games simultaneously, where each move influences your opponent's next step?
