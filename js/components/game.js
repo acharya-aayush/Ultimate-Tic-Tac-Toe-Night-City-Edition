@@ -46,7 +46,7 @@ export function startGame(mode) {
       'royce': { name: 'Royce', avatar: 'royce', character: 'royce' },
       'goro': { name: 'Goro', avatar: 'goro', character: 'goro' },
       'adamSmasher': { name: 'Adam Smasher', avatar: 'adam', character: 'adam' },
-      'aayushAcharya': { name: 'Aayush Acharya', avatar: 'aayush', character: 'aayush' }
+      'aayushAcharya': { name: 'The Architect', avatar: 'aayush', character: 'aayush' }
     };
     
     // Get the selected AI from the window variable
@@ -64,17 +64,15 @@ export function startGame(mode) {
       sideAvatar2.src = `assets/ai/${aiData.avatar}.png`;
     }
     
-    // Cyberpunk-themed console message
-    console.log(`%c[SYSTEM] ${aiData.name} AI initialized. Combat protocols active.`, 
-               "color: #FF003C; font-weight: bold;");
-    console.log(`%c[${aiData.name.toUpperCase()}] Ready to crush some gonks.`, 
-               "color: #FDFE03; font-style: italic;");
+    // Show AI dialogue box only for The Architect
+    const aiDialogue = document.getElementById('ai-dialogue');
+    if (aiDialogue) {
+      aiDialogue.style.display = selectedAI === 'aayushAcharya' ? 'block' : 'none';
+    }
   } else if (mode === 'online') {
     // Online multiplayer — player number is set by the WebSocket client
     const playerNum = window.onlinePlayerNumber || 1;
     window.player2Name = `Player ${playerNum === 1 ? 2 : 1}`;
-    console.log(`%c[ONLINE] Connected as Player ${playerNum} (${playerNum === 1 ? 'X' : 'O'})`,
-      'color:#00F9FF;font-weight:bold;');
     showNotification(
       playerNum === 1
         ? 'You are X — make the first move!'
@@ -88,11 +86,8 @@ export function startGame(mode) {
     }
   }
   
-  // Debug: Log the selected characters
-  console.log(`Starting game with Player 1: ${window.player1Name} (${window.player1Character}) vs Player 2: ${window.player2Name} (${window.player2Character})`);
-  
   // Check if we need to disable animations
-  window.disableWinAnimation = window.player1Name.toLowerCase() === 'aayush' || window.player1Name.toLowerCase() === 'aayush';
+  window.disableWinAnimation = window.player1Name.toLowerCase() === 'aayush';
   
   window.gameMode = mode;
   window.gameInProgress = true;
@@ -171,8 +166,6 @@ export function resetGame() {
 
 // Emergency reset - bypasses normal game flow to reset everything
 export function emergencyReset() {
-  console.log("Emergency reset triggered");
-  
   // Reset all game state
   window.gameMode = 'ai';
   window.currentPlayer = 'X';
@@ -198,8 +191,6 @@ export function emergencyReset() {
   
   // Update scoreboard
   updateScoreboard();
-  
-  console.log("Game has been emergency reset");
 }
 
 // Handle player move
@@ -211,13 +202,8 @@ export function handleMove(bi, ci, cell) {
   }
 
   // Add more detailed debugging info
-  console.log(`[DEBUG] Attempting move: board=${bi}, cell=${ci}`);
-  console.log(`[DEBUG] Game state: gameInProgress=${window.gameInProgress}, nextBoard=${window.nextBoard}`);
-  console.log(`[DEBUG] Board winners:`, window.boardWinners);
-
   // More robust check for valid move
   if (!window.gameInProgress) {
-    console.log("[DEBUG] Game is not in progress, ignoring move");
     if (window.audioSystem) {
       window.audioSystem.playSound('ui', 'invalid');
     }
@@ -236,7 +222,6 @@ export function handleMove(bi, ci, cell) {
 
   // Check if the board is already won
   if (window.boardWinners[bi]) {
-    console.log(`[DEBUG] Board ${bi} is already won by ${window.boardWinners[bi]}, ignoring move`);
     if (window.audioSystem) {
       window.audioSystem.playSound('ui', 'invalid');
     }
@@ -245,7 +230,6 @@ export function handleMove(bi, ci, cell) {
 
   // Check if the cell is already occupied
   if (cell.textContent) {
-    console.log(`[DEBUG] Cell ${ci} on board ${bi} is already occupied, ignoring move`);
     if (window.audioSystem) {
       window.audioSystem.playSound('ui', 'invalid');
     }
@@ -254,7 +238,6 @@ export function handleMove(bi, ci, cell) {
 
   // Check if we're playing on the correct board
   if (window.nextBoard !== -1 && bi !== window.nextBoard) {
-    console.log(`[DEBUG] Must play on board ${window.nextBoard}, not ${bi}, ignoring move`);
     if (window.audioSystem) {
       window.audioSystem.playSound('ui', 'invalid');
     }
@@ -265,9 +248,6 @@ export function handleMove(bi, ci, cell) {
   if (window.gameMode === 'online' && !window._remoteMove && _sendMove) {
     _sendMove(bi, ci);
   }
-  
-  console.log(`[MOVE] Player ${window.currentPlayer} placing at board ${bi}, cell ${ci}`);
-  
   // Place marker with animation effect
   placeMarkerWithEffect(cell, window.currentPlayer);
   recordMove(window.currentPlayer, bi, ci, window.boardWinners, window.nextBoard);
@@ -285,7 +265,6 @@ export function handleMove(bi, ci, cell) {
     const isBoardFull = targetBoard.cells.every(c => c.textContent);
     
     if (isBoardWon || isBoardFull) {
-      console.log(`[BOARD SELECT] Board ${nextBoardTarget} is ${isBoardWon ? 'already won' : 'full'}, allowing free move`);
       nextBoardTarget = -1; // Allow free move
     }
   }
@@ -295,18 +274,15 @@ export function handleMove(bi, ci, cell) {
   let gameWon = false;
   
   if (checkMiniWin(window.boards[bi], playerWhoMoved)) {
-    console.log(`[WIN CHECK] Player ${playerWhoMoved} has won mini-board ${bi}`);
     boardWon = true;
     
     // Process the board win and check if it resulted in a game win
     gameWon = handleBoardWin(bi, playerWhoMoved);
     
     if (gameWon) {
-      console.log("[DEBUG] Game is now won, ending turn");
       return; // Game over, no need to continue
     }
   } else if (window.boards[bi].cells.every(c => c.textContent)) {
-    console.log(`[DRAW] Mini-board ${bi} is a draw`);
     window.boardWinners[bi] = 'D';
     
     // Add visual indication of draw
@@ -331,11 +307,8 @@ export function handleMove(bi, ci, cell) {
 
   // Set next board immediately
   window.nextBoard = nextBoardTarget;
-  console.log(`[DEBUG] Next board set to: ${nextBoardTarget}`);
-  
   // Check for draw
   if (checkForDraw()) {
-    console.log("[DEBUG] Game is a draw, ending turn");
     return; // Game is a draw, no need to continue
   }
 
@@ -343,8 +316,6 @@ export function handleMove(bi, ci, cell) {
   if (!gameWon) {
     // Switch to next player
     window.currentPlayer = window.currentPlayer === 'X' ? 'O' : 'X';
-    console.log(`[PLAYER SWITCH] Now it's ${window.currentPlayer}'s turn`);
-    
     // Update UI with highlight effects immediately to avoid race conditions
     updateHighlight();
     
@@ -365,8 +336,6 @@ export function checkMiniWin(board, p) {
   const hasWin = win.some(line => line.every(i => g[i] === p));
   
   if (hasWin) {
-    console.log(`Mini-board win detected for player ${p}`, 
-                g.map((v, i) => ({pos: i, value: v})).filter(item => item.value === p));
   }
   
   return hasWin;
@@ -374,15 +343,9 @@ export function checkMiniWin(board, p) {
 
 // Check if the full game is won
 export function checkGameWin(p) {
-  console.log(`[GAME CHECK] Checking if player ${p} has won the overall game`);
-  console.log(`[GAME CHECK] Current boardWinners:`, window.boardWinners);
-  
   // Count how many boards each player has won
   const xWins = window.boardWinners.filter(winner => winner === 'X').length;
   const oWins = window.boardWinners.filter(winner => winner === 'O').length;
-  
-  console.log(`[DEBUG] Current board win counts: X=${xWins}, O=${oWins}`);
-  
   const w = window.boardWinners;
   const win = WIN_PATTERNS;
   
@@ -390,24 +353,17 @@ export function checkGameWin(p) {
   for (let i = 0; i < win.length; i++) {
     const line = win[i];
     const boardsInLine = [w[line[0]], w[line[1]], w[line[2]]];
-    
-    console.log(`[DEBUG] Checking line ${i}: [${line.join(',')}] = [${boardsInLine.join(',')}]`);
-    
     if (line.every(i => w[i] === p)) {
-      console.log(`[GAME CHECK] Player ${p} has won with line ${line}`);
       return true;
     }
   }
   
   // If no winning line is found, the game continues
-  console.log(`[GAME CHECK] No winning line found for player ${p}`);
   return false;
 }
 
 // Handle board win logic with properly updated records
 export function handleBoardWin(boardIndex, player) {
-  console.log(`[BOARD WIN] Processing win on board ${boardIndex} for player ${player}`);
-  
   // Make changes to the board immediately
   window.boards[boardIndex].element.classList.add('won');
   
@@ -499,20 +455,13 @@ export function updateHighlight() {
   
   // List of valid boards (not won and not full)
   const validBoards = [];
-  
-  console.log(`[DEBUG] updateHighlight called with nextBoard=${window.nextBoard}`);
-  console.log(`[DEBUG] Current game state: gameInProgress=${window.gameInProgress}`);
-  console.log(`[DEBUG] Board winners:`, window.boardWinners);
-  
   // Guard clause: if game isn't in progress, don't highlight anything
   if (!window.gameInProgress) {
-    console.log(`[DEBUG] Game not in progress, skipping highlights`);
     return;
   }
   
   // If nextBoard is -1, highlight all valid boards
   if (window.nextBoard === -1) {
-    console.log(`[DEBUG] Highlighting all valid boards (free move)`);
     window.boards.forEach((b, i) => {
       // Only highlight boards that aren't won and aren't full
       const isBoardWon = !!window.boardWinners[i];
@@ -530,7 +479,6 @@ export function updateHighlight() {
     const isBoardFull = window.boards[window.nextBoard].cells.every(c => c.textContent);
     
     if (isBoardFull) {
-      console.log(`[DEBUG] Next board ${window.nextBoard} is full, allowing free move`);
       // Board is full, highlight all valid boards instead
       window.nextBoard = -1; // Reset to allow free move
       window.boards.forEach((b, i) => {
@@ -541,14 +489,12 @@ export function updateHighlight() {
       });
     } else {
       // Board is valid, highlight it
-      console.log(`[DEBUG] Highlighting specific board: ${window.nextBoard}`);
       window.boards[window.nextBoard].element.classList.add('active');
       validBoards.push(window.nextBoard);
     }
   } 
   // The specified board is already won or drawn, allow free move
   else {
-    console.log(`[DEBUG] Next board ${window.nextBoard} is already won/drawn, allowing free move`);
     // Reset nextBoard to indicate free move
     window.nextBoard = -1;
     
@@ -562,11 +508,8 @@ export function updateHighlight() {
   }
   
   // Log the active boards for debugging
-  console.log(`[HIGHLIGHT] Active boards: ${validBoards.join(', ')}`);
-  
   // If no valid boards are highlighted, game might be a draw
   if (validBoards.length === 0) {
-    console.log("[HIGHLIGHT] No valid boards found, checking for draw");
     checkForDraw();
   }
 }
@@ -602,7 +545,6 @@ export function checkForDraw() {
 
 // Continue after game ends
 export function continueGame() {
-  console.log("Continue game called");
   controls.style.display = 'none';
   winnerDisplay.style.display = 'none';
   window.gameInProgress = true;
@@ -618,11 +560,14 @@ export function continueGame() {
 
 // Go back to setup screen
 export function backToSetup() {
-  console.log("Back to setup called");
   controls.style.display = 'none';
   winnerDisplay.style.display = 'none';
   mainBoard.style.display = 'none';
   
+  // Hide AI dialogue
+  const aiDialogue = document.getElementById('ai-dialogue');
+  if (aiDialogue) aiDialogue.style.display = 'none';
+
   playersSetup.style.display = 'flex';
   modeSelector.style.display = 'flex';
   

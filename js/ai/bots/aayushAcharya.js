@@ -104,6 +104,7 @@ export function makeAayushAcharyaMove(){
   const[bi,ci]=bm;
   const e={move:mc,action:bs>=100000?'WIN':th.h>=2?'CRISIS':'OPT',board:bi,cell:ci,score:bs};
   ml.push(e);if(!window.aayushMoveLog)window.aayushMoveLog=[];window.aayushMoveLog.push(e);
-  console.log(`%c[AAYUSH] ${Q[mc%Q.length]}`,'color:#FF00FF;font-style:italic;');
+  const _dlg=document.getElementById('ai-dialogue');
+  if(_dlg){_dlg.textContent=Q[mc%Q.length];_dlg.style.display='block';_dlg.classList.remove('pop');void _dlg.offsetWidth;_dlg.classList.add('pop');setTimeout(()=>{_dlg.classList.remove('pop')},3000);}
   return executeMove(bi,ci);
 }

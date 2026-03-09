@@ -15,10 +15,6 @@ import { executeMove } from '../engine.js';
 export function makeRoyceMove(validBoards) {
   // Randomly inject some chaos (20% chance of pure random move)
   const isFeelingSpontaneous = Math.random() < 0.2;
-  
-  console.log(`%c[ROYCE] ${isFeelingSpontaneous ? "I DO WHAT I WANT!" : "Hmm, where to hit next..."}`, 
-              "color: #FF5555; font-style: italic;");
-  
   if (isFeelingSpontaneous) {
     return makeRandomMove(validBoards);
   }
@@ -29,7 +25,6 @@ export function makeRoyceMove(validBoards) {
     const opportunity = evaluateWinBlock(virtualBoard, 'O');
     
     if (opportunity && opportunity.type === 'win') {
-      console.log(`%c[ROYCE] Crushing you now!`, "color: #FF5555; font-style: italic;");
       return executeMove(boardIndex, opportunity.moveIndex);
     }
   }
@@ -40,7 +35,6 @@ export function makeRoyceMove(validBoards) {
     const opportunity = evaluateWinBlock(virtualBoard, 'X');
     
     if (opportunity && opportunity.type === 'block') {
-      console.log(`%c[ROYCE] Not so fast, choom!`, "color: #FF5555; font-style: italic;");
       return executeMove(boardIndex, opportunity.moveIndex);
     }
   }
@@ -97,10 +91,6 @@ function makeRandomMove(validBoards) {
     const availableSides = sides.filter(side => emptyCells.includes(side));
     cellIndex = availableSides[Math.floor(Math.random() * availableSides.length)];
   }
-  
-  console.log(`%c[ROYCE] Making random move on board ${boardIndex}, cell ${cellIndex}`, 
-              "color: #FF5555;");
-  
   return executeMove(boardIndex, cellIndex);
 }
 
@@ -145,9 +135,5 @@ function makePositionalMove(validBoards) {
   if (bestBoardIndex === null) {
     return makeRandomMove(validBoards);
   }
-  
-  console.log(`%c[ROYCE] Making positional move on board ${bestBoardIndex}, cell ${bestCellIndex}`, 
-              "color: #FF5555;");
-  
   return executeMove(bestBoardIndex, bestCellIndex);
 } 
