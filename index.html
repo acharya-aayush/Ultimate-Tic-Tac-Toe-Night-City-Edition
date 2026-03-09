@@ -51,23 +51,18 @@
   </style>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
   <script>
-    // Prevent ServiceWorker errors 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register = function() {
         return Promise.reject(new Error("ServiceWorker disabled"));
       };
     }
-    
-    // Prevent notification errors
     if ('Notification' in window) {
       Notification.requestPermission = function() {
         return Promise.reject(new Error("Notifications disabled"));
       };
     }
   </script>
-  <!-- UPDATE this URL after deploying your Render backend -->
-  <script>window.MULTIPLAYER_SERVER_URL = null; /* e.g. 'wss://night-city-ttt.onrender.com' */</script>
-</head>
+ <script>window.MULTIPLAYER_SERVER_URL = 'wss://ultimate-tic-tac-toe-night-city-edition.onrender.com';</script>
 <body>
   <div class="cyberpunk-container">
     <!-- Digital grid background -->
