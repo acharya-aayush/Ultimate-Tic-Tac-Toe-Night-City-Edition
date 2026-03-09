@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: night-city-ttt
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: ALLOWED_ORIGIN
+        value: https://acharya-aayush.github.io
+      - key: NODE_ENV
+        value: production

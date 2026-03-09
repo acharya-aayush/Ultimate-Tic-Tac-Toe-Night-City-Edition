@@ -6,6 +6,49 @@
   <title>Night City Ultimate Tic Tac Toe</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Multiplayer lobby overlay ── */
+    .mp-lobby-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.82);
+      backdrop-filter: blur(4px);
+    }
+    .mp-lobby-overlay.hidden { display: none; }
+    .mp-lobby-panel {
+      position: relative; padding: 2rem 2.5rem;
+      background: #0a0a14; border: 1px solid #00F9FF;
+      box-shadow: 0 0 30px rgba(0,249,255,.25);
+      min-width: 320px; max-width: 420px; text-align: center;
+    }
+    .mp-title {
+      font-family: 'Rajdhani', sans-serif;
+      color: #00F9FF; font-size: 1.6rem; letter-spacing: .15em;
+      margin: 0 0 1.4rem;
+    }
+    .mp-step { display: flex; flex-direction: column; gap: .8rem; }
+    .mp-step.hidden { display: none; }
+    .mp-label {
+      font-family: 'Rajdhani', sans-serif;
+      color: #ccc; font-size: .85rem; letter-spacing: .1em;
+      margin-bottom: .3rem;
+    }
+    .mp-code-input {
+      background: #0d0d1e; border: 1px solid #00F9FF; color: #00F9FF;
+      font-family: 'Rajdhani', monospace; font-size: 2rem;
+      text-align: center; letter-spacing: .3em;
+      padding: .4rem; text-transform: uppercase; width: 100%;
+      outline: none;
+    }
+    .mp-code-input:focus { box-shadow: 0 0 8px rgba(0,249,255,.5); }
+    .mp-room-code {
+      font-family: 'Rajdhani', monospace; font-size: 3rem;
+      color: #FDFE03; letter-spacing: .3em;
+      text-shadow: 0 0 12px rgba(253,254,3,.6);
+      margin: .5rem 0;
+    }
+    .mp-status { color: #888; font-size: .85rem; margin: 0; }
+  </style>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
   <script>
     // Prevent ServiceWorker errors 
@@ -22,6 +65,8 @@
       };
     }
   </script>
+  <!-- UPDATE this URL after deploying your Render backend -->
+  <script>window.MULTIPLAYER_SERVER_URL = null; /* e.g. 'wss://night-city-ttt.onrender.com' */</script>
 </head>
 <body>
   <div class="cyberpunk-container">
@@ -159,6 +204,9 @@
         <button class="cyber-button main-button" id="aiGameButton">
           <span class="button-content">VS AI</span>
         </button>
+        <button class="cyber-button main-button" id="onlineGameButton" onclick="window.showMultiplayerLobby && window.showMultiplayerLobby()">
+          <span class="button-content">ONLINE</span>
+        </button>
       </div>
       
       <!-- AI SELECTOR -->
@@ -245,6 +293,9 @@
       </button>
       <button class="cyber-button" id="newMatchButton">
         <span class="button-content">NEW MATCH</span>
+      </button>
+      <button class="cyber-button" onclick="window.downloadGameMoves('json')">
+        <span class="button-content">DOWNLOAD MOVES</span>
       </button>
     </div>
     
@@ -712,6 +763,10 @@
     }
   </script>
   <script src="script.js" type="module"></script>
+  <script type="module">
+    import { initMultiplayer } from './js/multiplayer/client.js';
+    document.addEventListener('DOMContentLoaded', initMultiplayer);
+  </script>
   <button onclick="playUnlockAnimation()">Test Unlock Animation</button>
 </body>
 </html> 
