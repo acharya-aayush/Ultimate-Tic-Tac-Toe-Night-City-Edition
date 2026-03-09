@@ -21,4 +21,3 @@ export function aiMove() {
 }
 
 // Initialize the multi-bot system
-console.log("[AI] Multi-bot system loaded"); 

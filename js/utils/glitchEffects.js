@@ -239,7 +239,6 @@ export function initRandomGlitches(minInterval = 10000, maxInterval = 20000) {
       // Only apply if game is in progress or on menu
       if (document.querySelector('.cyberpunk-container')) {
         applyRandomGlitch();
-        console.log(`Applied cyberpunk glitch effect, next in ~${Math.round(nextGlitchTime/1000)}s`);
       }
       scheduleNextGlitch();
     }, nextGlitchTime);

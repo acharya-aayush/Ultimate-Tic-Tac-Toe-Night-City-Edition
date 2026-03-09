@@ -19,12 +19,8 @@ export function makeGoroMove(validBoards) {
   const useSimpleStrategy = Math.random() < 0.5;
   
   if (useSimpleStrategy) {
-    console.log(`%c[GORO] Following standard Arasaka protocols.`, 
-                "color: #FFAA00; font-style: italic;");
     return makeRoyceMove(validBoards);
   } else {
-    console.log(`%c[GORO] Analyzing tactical options...`, 
-                "color: #FFAA00; font-style: italic;");
     return makeMinimaxMove(validBoards);
   }
 }
@@ -77,7 +73,6 @@ function makeMinimaxMove(validBoards) {
   
   // If no good move found, fall back to a simple strategy
   if (bestMoveBoard === null) {
-    console.log(`%c[GORO] Switching to contingency plan.`, "color: #FFAA00; font-style: italic;");
     return makeRoyceMove(validBoards);
   }
   
@@ -89,10 +84,6 @@ function makeMinimaxMove(validBoards) {
     "I see the path to victory."
   ];
   const quote = quotes[Math.floor(Math.random() * quotes.length)];
-  console.log(`%c[GORO] ${quote}`, "color: #FFAA00; font-style: italic;");
-  
-  console.log(`[GORO] Choosing board ${bestMoveBoard}, cell ${bestMoveCell} with score ${bestScore}`);
-  
   // Execute the move
   return executeMove(bestMoveBoard, bestMoveCell);
 }

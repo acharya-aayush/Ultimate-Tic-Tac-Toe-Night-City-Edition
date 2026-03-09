@@ -2175,4 +2175,461 @@ h1 {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-} 
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AI DIALOGUE BOX — The Architect taunts
+   ═══════════════════════════════════════════════════════════════ */
+.ai-dialogue {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid var(--neon-magenta);
+  color: var(--neon-magenta);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.4;
+  text-align: center;
+  letter-spacing: 0.3px;
+  max-width: 140px;
+  word-break: break-word;
+  box-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+  position: relative;
+}
+
+.ai-dialogue::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom: 7px solid var(--neon-magenta);
+  border-top: 0;
+}
+
+@keyframes dialogue-pop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  70%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+.ai-dialogue.pop {
+  animation: dialogue-pop 0.35s ease-out forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL: HIDE SCROLLBARS EVERYWHERE
+   ═══════════════════════════════════════════════════════════════ */
+html {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;
+}
+* {
+  scrollbar-width: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DESKTOP ≥ 769px — COMPACT LAYOUT, NO OVERFLOW
+   ═══════════════════════════════════════════════════════════════ */
+@media (min-width: 769px) {
+  html, body {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .cyberpunk-container {
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* Compact header */
+  .game-header {
+    margin: 6px auto 10px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 2px;
+  }
+
+  .developer-credit {
+    margin-top: 4px;
+  }
+
+  /* Compact player setup cards */
+  .players-container {
+    padding: 6px 0;
+    margin-bottom: 8px;
+    gap: 16px;
+  }
+
+  .card-top {
+    height: 100px;
+  }
+
+  .player-image {
+    height: 100px;
+  }
+
+  .card-info {
+    padding: 8px 14px;
+    gap: 5px;
+  }
+
+  .player-name-input {
+    padding: 6px;
+    font-size: 15px;
+  }
+
+  .character-select-label {
+    margin: 3px 0;
+    font-size: 12px;
+  }
+
+  .character-select {
+    gap: 5px;
+    margin-top: 4px;
+  }
+
+  .avatar-thumb {
+    width: 32px;
+    height: 32px;
+  }
+
+  .character-name {
+    font-size: 10px;
+  }
+
+  .avatar-button {
+    padding: 3px;
+  }
+
+  /* Mode buttons */
+  .controls {
+    margin: 8px 0;
+  }
+
+  .main-button {
+    min-width: 160px;
+    height: 44px;
+  }
+
+  /* AI Selector compact */
+  .ai-selector {
+    margin: 0.7rem auto;
+  }
+
+  .ai-selector h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .ai-options {
+    gap: 0.6rem;
+  }
+
+  .ai-option {
+    width: 80px;
+    padding: 0.45rem;
+  }
+
+  .ai-option img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .ai-option span {
+    font-size: 0.75rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE ≤ 768px — RESPONSIVE LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  html, body {
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .cyberpunk-container {
+    padding: 10px 8px;
+    min-height: 100svh;
+    height: auto;
+  }
+
+  /* Header */
+  .game-header {
+    margin: 6px auto 12px;
+  }
+
+  h1 {
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+
+  .subtitle {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  #dev-credit {
+    font-size: 0.75rem;
+  }
+
+  /* Player setup — stack vertically */
+  .players-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 8px 0 !important;
+    margin-bottom: 10px !important;
+    gap: 10px !important;
+  }
+
+  .player-setup {
+    width: min(288px, 88vw) !important;
+  }
+
+  .card-top {
+    height: 100px;
+  }
+
+  .player-image {
+    height: 100px;
+  }
+
+  .card-info {
+    padding: 8px 10px;
+    gap: 5px;
+  }
+
+  .player-name-input {
+    font-size: 15px;
+    padding: 7px;
+  }
+
+  .avatar-thumb {
+    width: 32px;
+    height: 32px;
+  }
+
+  .character-name {
+    font-size: 10px;
+  }
+
+  /* Mode buttons */
+  .mode-buttons {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .main-button {
+    min-width: 120px;
+    height: 42px;
+    font-size: 13px;
+  }
+
+  /* AI Selector */
+  .ai-selector {
+    margin: 0.7rem auto;
+  }
+
+  .ai-selector h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .ai-options {
+    gap: 0.5rem;
+  }
+
+  .ai-option {
+    width: 70px;
+    padding: 0.4rem;
+  }
+
+  .ai-option img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .ai-option span {
+    font-size: 0.68rem;
+  }
+
+  /* Game layout */
+  .game-layout {
+    flex-direction: column !important;
+    gap: 6px;
+  }
+
+  .player-side {
+    flex-direction: row !important;
+    width: 100% !important;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .side-avatar {
+    width: 58px;
+    height: 58px;
+  }
+
+  .side-name {
+    font-size: 13px;
+  }
+
+  .player-side.left  { order: 1; }
+  #mainBoard         { order: 2; }
+  .player-side.right { order: 3; }
+
+  /* Board */
+  .board {
+    gap: 5px;
+    margin: 4px auto;
+  }
+
+  .mini-board {
+    grid-template-columns: repeat(3, 32px);
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .cell {
+    width: 32px;
+    height: 32px;
+    font-size: 19px;
+  }
+
+  .giant-symbol {
+    font-size: 58px;
+  }
+
+  /* Winner display */
+  .hologram-text.active {
+    font-size: 28px;
+  }
+
+  .winner-display {
+    height: 80px;
+    margin: 8px auto;
+  }
+
+  /* Controls */
+  .controls {
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0;
+    gap: 8px;
+  }
+
+  .cyber-button {
+    width: 82%;
+    max-width: 260px;
+  }
+
+  /* AI dialogue on mobile */
+  .ai-dialogue {
+    font-size: 11px;
+    max-width: 115px;
+    padding: 5px 7px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE ≤ 480px — EXTRA COMPACT
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 18px;
+  }
+
+  .game-logo {
+    max-width: 120px;
+  }
+
+  .player-setup {
+    width: min(260px, 94vw) !important;
+  }
+
+  .card-top {
+    height: 85px;
+  }
+
+  .player-image {
+    height: 85px;
+  }
+
+  .avatar-thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  .character-select {
+    gap: 4px;
+  }
+
+  /* Smaller board */
+  .board {
+    gap: 4px;
+  }
+
+  .mini-board {
+    grid-template-columns: repeat(3, 26px);
+    gap: 2px;
+    padding: 3px;
+  }
+
+  .cell {
+    width: 26px;
+    height: 26px;
+    font-size: 15px;
+  }
+
+  .giant-symbol {
+    font-size: 46px;
+  }
+
+  .side-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .side-name {
+    font-size: 12px;
+  }
+
+  .main-button {
+    min-width: 108px;
+    height: 38px;
+    font-size: 12px;
+  }
+
+  .ai-option {
+    width: 62px;
+    padding: 0.3rem;
+  }
+
+  .ai-option img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .ai-option span {
+    font-size: 0.62rem;
+  }
+}
