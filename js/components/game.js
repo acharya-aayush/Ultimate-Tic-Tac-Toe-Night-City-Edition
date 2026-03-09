@@ -8,6 +8,15 @@ import { updatePlayerUI, updateScoreboard } from './players.js';
 import { aiMove } from '../ai/ai.js';
 import { glitchElement, applyMajorGlitch } from '../utils/glitchEffects.js';
 import { recordAdamSmasherDefeat } from '../../script.js';
+import { resetSession, recordMove, finalizeGame } from '../utils/moveTracker.js';
+
+// Lazy import for multiplayer send helper (avoids circular deps)
+let _sendMove = null;
+function importMultiplayer() {
+  if (_sendMove) return;
+  import('../multiplayer/client.js').then(m => { _sendMove = m.sendMove; }).catch(() => {});
+}
+importMultiplayer();
 
 // DOM element references
 const mainBoard = document.getElementById('mainBoard');
@@ -60,6 +69,18 @@ export function startGame(mode) {
                "color: #FF003C; font-weight: bold;");
     console.log(`%c[${aiData.name.toUpperCase()}] Ready to crush some gonks.`, 
                "color: #FDFE03; font-style: italic;");
+  } else if (mode === 'online') {
+    // Online multiplayer — player number is set by the WebSocket client
+    const playerNum = window.onlinePlayerNumber || 1;
+    window.player2Name = `Player ${playerNum === 1 ? 2 : 1}`;
+    console.log(`%c[ONLINE] Connected as Player ${playerNum} (${playerNum === 1 ? 'X' : 'O'})`,
+      'color:#00F9FF;font-weight:bold;');
+    showNotification(
+      playerNum === 1
+        ? 'You are X — make the first move!'
+        : "You are O — waiting for opponent's first move…",
+      4000
+    );
   } else {
     // Only update player 2 name if user has manually changed it
     if (player2Input && player2Input.value.trim()) {
@@ -99,6 +120,7 @@ export function startGame(mode) {
   updateScoreboard();
   
   // Reset the game board
+  resetSession(mode);
   resetGame();
   
   // Play UI sounds
@@ -202,6 +224,16 @@ export function handleMove(bi, ci, cell) {
     return;
   }
 
+  // ── Online mode: block moves on wrong turn (unless this is a relayed remote move) ──
+  if (window.gameMode === 'online' && !window._remoteMove) {
+    const myNum = window.onlinePlayerNumber || 1;
+    const mySymbol = myNum === 1 ? 'X' : 'O';
+    if (window.currentPlayer !== mySymbol) {
+      showNotification("Wait for your opponent's move.", 2000);
+      return;
+    }
+  }
+
   // Check if the board is already won
   if (window.boardWinners[bi]) {
     console.log(`[DEBUG] Board ${bi} is already won by ${window.boardWinners[bi]}, ignoring move`);
@@ -228,11 +260,17 @@ export function handleMove(bi, ci, cell) {
     }
     return;
   }
+
+  // ── Online mode: broadcast this local move to the server (before state changes) ──
+  if (window.gameMode === 'online' && !window._remoteMove && _sendMove) {
+    _sendMove(bi, ci);
+  }
   
   console.log(`[MOVE] Player ${window.currentPlayer} placing at board ${bi}, cell ${ci}`);
   
   // Place marker with animation effect
   placeMarkerWithEffect(cell, window.currentPlayer);
+  recordMove(window.currentPlayer, bi, ci, window.boardWinners, window.nextBoard);
   
   // Store the player who made this move to verify win attribution
   const playerWhoMoved = window.currentPlayer;
@@ -447,6 +485,7 @@ export function handleBoardWin(boardIndex, player) {
       window.audioSystem.playGameWinSound();
     }
     
+    finalizeGame(player);
     return true;
   }
   
@@ -554,6 +593,7 @@ export function checkForDraw() {
       window.audioSystem.playDrawSound();
     }
     
+    finalizeGame('draw');
     return true;
   }
   
