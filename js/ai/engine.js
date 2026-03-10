@@ -32,13 +32,18 @@ export function initAI() {
 export function updateAISelector(botName) {
   // Clear all selected states
   document.querySelectorAll('.ai-option').forEach(option => {
-    option.classList.remove('selected');
+    option.classList.remove('selected', 'active');
   });
   
   // Select the appropriate bot in the UI
   const botSelector = document.querySelector(`.ai-option[data-ai="${botName}"]`);
   if (botSelector) {
-    botSelector.classList.add('selected');
+    botSelector.classList.add('selected', 'active');
+    // Update preview image & name in the AI selector panel
+    const preview = document.getElementById('aiAvatarPreview');
+    const nameEl = document.getElementById('aiSelectedName');
+    if (preview && botSelector.dataset.img) preview.src = botSelector.dataset.img;
+    if (nameEl && botSelector.dataset.name) nameEl.textContent = botSelector.dataset.name.toUpperCase();
   }
 }
 

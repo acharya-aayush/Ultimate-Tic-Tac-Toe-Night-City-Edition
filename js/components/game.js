@@ -22,7 +22,6 @@ importMultiplayer();
 const mainBoard = document.getElementById('mainBoard');
 const scoreboard = document.getElementById('scoreboard');
 const winnerDisplay = document.getElementById('winner-display');
-const modeSelector = document.getElementById('modeSelector');
 const playersSetup = document.getElementById('players-setup');
 const controls = document.getElementById('controls');
 const glitchOverlay = document.querySelector('.glitch-overlay');
@@ -94,7 +93,6 @@ export function startGame(mode) {
   
   // Hide setup elements, show game elements
   if (playersSetup) playersSetup.style.display = 'none';
-  if (modeSelector) modeSelector.style.display = 'none';
   if (controls) controls.style.display = 'none';
   
   // Make sure game layout is visible first
@@ -569,7 +567,18 @@ export function backToSetup() {
   if (aiDialogue) aiDialogue.style.display = 'none';
 
   playersSetup.style.display = 'flex';
-  modeSelector.style.display = 'flex';
+  
+  // Restore default 2P mode layout
+  const p2Card = document.getElementById('p2Card');
+  const aiPanel = document.getElementById('aiSelectorPanel');
+  const jackIn = document.getElementById('jackInBtn');
+  if (p2Card) p2Card.style.display = '';
+  if (aiPanel) aiPanel.style.display = 'none';
+  if (jackIn) jackIn.style.display = '';
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected-mode'));
+  const humanBtn = document.getElementById('humanGameButton');
+  if (humanBtn) humanBtn.classList.add('selected-mode');
+  if (typeof window._currentMode !== 'undefined') window._currentMode = 'human';
   
   // Reset game state to make sure we start clean
   window.gameInProgress = false;
@@ -579,4 +588,4 @@ export function backToSetup() {
   if (window.audioSystem) {
     window.audioSystem.playSound('ui', 'click');
   }
-} 
+}

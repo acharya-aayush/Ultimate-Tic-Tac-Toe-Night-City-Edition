@@ -158,16 +158,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Prevent double initialization
   if (isInitialized) return;
   isInitialized = true;
-  
-  console.log('DOM fully loaded. Initializing game...');
-  
   // Always start with Aayush locked regardless of localStorage
   hideAayushInitially();
   
   // Initialize global state
   initGlobalState();
-  console.log('Global state initialized');
-  
   // Initialize audio on first user interaction (needed for browsers)
   initAudioOnInteraction();
   
@@ -189,9 +184,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (typeof window.handleModuleLoad === 'function') {
     window.handleModuleLoad();
   }
-  
-  console.log('Game functions exposed to global scope');
-  
   updateCharacterSelection();
   
   // Initialize background music
@@ -210,8 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to initialize audio playback on user interaction
 function initAudioOnInteraction() {
-  console.log('Setting up audio initialization...');
-  
   // Track if audio is already activated
   let audioActivated = false;
   
@@ -222,26 +212,20 @@ function initAudioOnInteraction() {
     
     // Create and play a silent audio to unlock the audio context
     const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
-    silentAudio.play().catch(error => console.log("Silent audio play failed:", error));
+    silentAudio.play().catch(() => {});
     
     // The AudioManager class is defined in audio.js which is loaded normally in the HTML
     // So we can access it directly once the audio context is unlocked
     if (window.AudioManager && !window.audioSystem) {
       window.audioSystem = new window.AudioManager();
-      console.log('Audio system created and initialized');
     } else if (window.audioSystem) {
-      console.log('Using existing audio system');
     } else {
-      console.error('AudioManager class not found. Check if audio.js is properly loaded.');
     }
     
     // Remove event listeners once audio is activated
     document.removeEventListener('click', activateAudio);
     document.removeEventListener('keydown', activateAudio);
     document.removeEventListener('touchstart', activateAudio);
-    
-    console.log('Audio context activated');
-    
     // Continue with initialization after audio is activated
     if (typeof createCircuitLines === 'function') {
       createCircuitLines();
@@ -334,8 +318,6 @@ function checkAayushUnlockStatus() {
   const isUnlocked = sessionStorage.getItem('aayushSessionUnlock') === 'true';
   
   if (isUnlocked) {
-    console.log('Aayush AI is already unlocked in this session');
-    
     // Show the Aayush AI option without the lock
     const aayushOption = document.getElementById('aayushAIOption');
     if (aayushOption) {
@@ -361,8 +343,6 @@ export function recordAdamSmasherDefeat(winnerName, loserName) {
   if (loserName !== 'Adam Smasher' || sessionStorage.getItem('aayushSessionUnlock') === 'true') {
     return;
   }
-  
-  console.log(`${winnerName} defeated ${loserName}! Unlocking Aayush AI...`);
   unlockAayushAI('adamSmasher');
 }
 
@@ -491,7 +471,7 @@ function playUnlockAnimation() {
     
     // Play unlock sound
     unlockAudio = new Audio('sounds/aayushunlock.mp3');
-    unlockAudio.play().catch(error => console.log('Audio play failed:', error));
+    unlockAudio.play().catch(() => {});
     
     // Handle skip functionality
     setTimeout(() => {
@@ -517,7 +497,7 @@ function completeUnlock(unlockSequence) {
     
     // Resume background music if it exists
     if (bgMusic) {
-        bgMusic.play().catch(error => console.log('Background music play failed:', error));
+        bgMusic.play().catch(() => {});
     }
     
     // Remove unlock sequence

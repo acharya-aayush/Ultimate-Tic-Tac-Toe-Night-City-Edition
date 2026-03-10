@@ -23,9 +23,6 @@ window.AudioManager = class AudioManager {
     // Initialize
     this.initAudio();
     this.setupEventListeners();
-    
-    console.log("[AUDIO] Audio system initialized with real audio enabled");
-    
     // Setup hooks for module system
     this.setupGlobalHooks();
   }
@@ -44,8 +41,6 @@ window.AudioManager = class AudioManager {
     window.playGameWinSound = () => this.playGameWinSound();
     window.playDrawSound = () => this.playDrawSound();
     window.nextTrack = () => this.playNextTrack();
-    
-    console.log("[AUDIO] Global audio hooks set up");
   }
   
   /**
@@ -171,7 +166,6 @@ window.AudioManager = class AudioManager {
       const j = Math.floor(Math.random() * (i + 1));
       [this.musicQueue[i], this.musicQueue[j]] = [this.musicQueue[j], this.musicQueue[i]];
     }
-    console.log('[AUDIO] Shuffled music queue:', this.musicQueue);
   }
   
   /**
@@ -194,7 +188,6 @@ window.AudioManager = class AudioManager {
     
     // Add error handler to catch 404 errors
     audio.onerror = () => {
-      console.warn(`[AUDIO] Could not load audio file: ${src}`);
       this.missingFiles.add(src); // Track missing files
       this.dummyAudioEnabled = true; // Fall back to dummy audio mode when files are missing
     };
@@ -204,8 +197,6 @@ window.AudioManager = class AudioManager {
     if (options.volume !== undefined) audio.volume = options.volume;
     
     // Log that we're loading this audio file
-    console.log(`[AUDIO] Loading audio file: ${src}`);
-    
     return audio;
   }
   
@@ -241,7 +232,6 @@ window.AudioManager = class AudioManager {
     
     // Check if the sound exists
     if (!this.sounds[category] || !this.sounds[category][name]) {
-      console.warn(`[AUDIO] Sound not found: ${category}.${name}`);
       return;
     }
     
@@ -253,7 +243,6 @@ window.AudioManager = class AudioManager {
     
     // Check if audio file has loaded correctly
     if (sound.error || sound.readyState === 0) {
-      console.warn(`[AUDIO] Sound ${category}.${name} not loaded properly, skipping playback`);
       return;
     }
     
@@ -262,11 +251,8 @@ window.AudioManager = class AudioManager {
     
     if (playPromise !== undefined) {
       playPromise.catch(error => {
-        console.warn(`[AUDIO] Error playing sound ${category}.${name}: ${error.message}`);
       });
     }
-    
-    console.log(`[AUDIO] Playing sound: ${category}.${name}`);
   }
   
   /**
@@ -281,16 +267,12 @@ window.AudioManager = class AudioManager {
     // Advance to next track in the queue
     this.currentMusicIndex = (this.currentMusicIndex + 1) % this.musicQueue.length;
     this.currentMusic = this.musicQueue[this.currentMusicIndex];
-    
-    console.log(`[AUDIO] Playing next track: ${this.currentMusic} (index ${this.currentMusicIndex}/${this.musicQueue.length-1})`);
-    
     // Play the next track
     if (this.sounds.music[this.currentMusic]) {
       this.sounds.music[this.currentMusic].currentTime = 0;
       
       // Check if audio file has loaded correctly
       if (this.sounds.music[this.currentMusic].error || this.sounds.music[this.currentMusic].readyState === 0) {
-        console.warn(`[AUDIO] Track ${this.currentMusic} not loaded properly, skipping to next track`);
         // Try the next track in the sequence
         setTimeout(() => this.playNextTrack(), 500);
         return;
@@ -298,7 +280,6 @@ window.AudioManager = class AudioManager {
       
       // Set up ended handler for this track
       this.sounds.music[this.currentMusic].onended = () => {
-        console.log(`[AUDIO] Track ${this.currentMusic} ended naturally, playing next track`);
         this.playNextTrack();
       };
       
@@ -306,13 +287,11 @@ window.AudioManager = class AudioManager {
       
       if (playPromise !== undefined) {
         playPromise.catch(error => {
-          console.warn(`[AUDIO] Error playing music ${this.currentMusic}: ${error.message}`);
           // Try the next track on error
           setTimeout(() => this.playNextTrack(), 500);
         });
       }
     } else {
-      console.warn(`[AUDIO] Track ${this.currentMusic} not found in sound library`);
       // Try the next track
       setTimeout(() => this.playNextTrack(), 500);
     }
@@ -343,19 +322,15 @@ window.AudioManager = class AudioManager {
       this.currentMusicIndex = 0;
       this.currentMusic = this.musicQueue[this.currentMusicIndex];
       name = this.currentMusic; // Use the first track
-      
-      console.log(`[AUDIO] Starting gameplay music sequence with: ${name} (Queue: ${this.musicQueue.join(', ')})`);
     } else {
       // For non-gameplay music (like victory), just play it directly
       this.currentMusic = name;
-      console.log(`[AUDIO] Starting specific music: ${name}`);
     }
     
     // Start new music if available
     if (this.sounds.music[name]) {
       // Check if audio file has loaded correctly
       if (this.sounds.music[name].error || this.sounds.music[name].readyState === 0) {
-        console.warn(`[AUDIO] Track ${name} not loaded properly, skipping to next track`);
         if (name !== 'victory') {
           // If it's gameplay music, try the next track
           setTimeout(() => this.playNextTrack(), 500);
@@ -367,7 +342,6 @@ window.AudioManager = class AudioManager {
       if (name !== 'victory') {
         // Ensure the ended event listener is attached to switch to the next track
         this.sounds.music[name].onended = () => {
-          console.log(`[AUDIO] Track ${name} ended naturally, playing next track`);
           this.playNextTrack();
         };
       }
@@ -398,7 +372,6 @@ window.AudioManager = class AudioManager {
       }
     }
     this.currentMusic = null;
-    console.log('[AUDIO] All music stopped');
   }
   
   /**
@@ -410,7 +383,6 @@ window.AudioManager = class AudioManager {
     
     if (this.musicEnabled) {
       // Enable music by starting/resuming current track
-      console.log('[AUDIO] Music enabled');
       if (this.currentMusic && this.sounds.music[this.currentMusic]) {
         this.sounds.music[this.currentMusic].play().catch(error => {
           console.error('[AUDIO] Error resuming music:', error);
@@ -420,7 +392,6 @@ window.AudioManager = class AudioManager {
       }
     } else {
       // Disable music by stopping all tracks
-      console.log('[AUDIO] Music disabled');
       this.stopMusic();
     }
     
@@ -436,9 +407,6 @@ window.AudioManager = class AudioManager {
   toggleSFX() {
     this.sfxEnabled = !this.sfxEnabled;
     const sfxBtn = document.getElementById('toggleSfx');
-    
-    console.log(`[AUDIO] Sound effects ${this.sfxEnabled ? 'enabled' : 'disabled'}`);
-    
     if (sfxBtn) {
       sfxBtn.classList.toggle('muted', !this.sfxEnabled);
     }
@@ -524,7 +492,6 @@ if (!window.audioSystem) {
 document.addEventListener('click', function() {
   // Try to play a silent audio to unlock audio context
   if (window.audioSystem && window.audioSystem.musicEnabled) {
-    console.log('[AUDIO] User interaction detected, enabling audio playback');
     window.audioSystem.playMusic('gameplay');
   }
 }, { once: true }); 

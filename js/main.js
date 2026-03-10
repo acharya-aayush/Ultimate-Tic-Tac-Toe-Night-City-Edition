@@ -226,6 +226,35 @@ function updateAIAvatar(difficulty) {
   }
 }
 
+// ─── HIDDEN DEBUG COMMAND ──────────────────────────────────────────────────
+// Type: theblueprint()  in the browser console to reveal system diagnostics
+window.theblueprint = function() {
+  const state = {
+    gameInProgress: window.gameInProgress,
+    currentPlayer: window.currentPlayer,
+    nextBoard: window.nextBoard,
+    boardWinners: window.boardWinners ? [...window.boardWinners] : [],
+    boards: window.boards ? window.boards.map(b => [...b]) : [],
+    player1: { name: window.player1Name, avatar: window.player1Avatar, score: window.player1Score },
+    player2: { name: window.player2Name, avatar: window.player2Avatar, score: window.player2Score },
+    selectedAI: window.selectedAIBot,
+    aiMoveLog: window.aayushMoveLog ? window.aayushMoveLog.slice(-5) : [],
+    audioSystem: window.audioSystem ? { music: window.audioSystem.musicEnabled, sfx: window.audioSystem.sfxEnabled } : null,
+  };
+  console.group('%c[THE BLUEPRINT] System Diagnostics', 'color:#FF2A6D;font-weight:bold;font-size:14px;');
+  console.log('%cGame State', 'color:#05D9E8;font-weight:bold;', state);
+  if (window.aayushMoveLog && window.aayushMoveLog.length) {
+    console.table(window.aayushMoveLog.slice(-10).map(m => ({
+      Move: m.move, Action: m.action,
+      Board: `(${Math.floor(m.board/3)},${m.board%3})`,
+      Cell: `(${Math.floor(m.cell/3)},${m.cell%3})`,
+      Score: `${m.score}/10`
+    })));
+  }
+  console.groupEnd();
+  return '> Access granted. Night City knows no mercy.';
+};
+
 // Export functions for use in other modules
 export {
   setupAudioControls,

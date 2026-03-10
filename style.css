@@ -2633,3 +2633,139 @@ body::-webkit-scrollbar,
     font-size: 0.62rem;
   }
 }
+/* ---------------------------------------------------------------
+   NEW 3-COLUMN SETUP LAYOUT  [P1] [MODE] [P2/AI]
+   --------------------------------------------------------------- */
+
+#players-setup {
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  flex-wrap: nowrap !important;
+  padding: 12px 0 8px !important;
+  margin-bottom: 4px !important;
+}
+
+.right-slot {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.mode-center-panel {
+  flex-shrink: 0;
+  width: 148px;
+  display: flex;
+  align-items: stretch;
+}
+
+.mode-panel-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 8px;
+  background: rgba(5, 217, 232, 0.04);
+  border: 1px solid rgba(5, 217, 232, 0.18);
+  border-radius: 6px;
+}
+
+.mode-vs-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--neon-blue);
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.mode-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+.mode-btn {
+  width: 100% !important;
+  min-width: unset !important;
+  height: 36px !important;
+  font-size: 11px !important;
+  letter-spacing: 1.5px;
+  padding: 0 8px !important;
+}
+
+.mode-btn.selected-mode {
+  border-color: var(--neon-yellow) !important;
+  color: var(--neon-yellow) !important;
+  box-shadow: 0 0 12px rgba(253, 254, 3, 0.35) !important;
+}
+
+.jack-in-btn {
+  width: 100% !important;
+  min-width: unset !important;
+  height: 40px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px;
+  background: rgba(5, 217, 232, 0.1) !important;
+  border-color: var(--neon-blue) !important;
+  color: var(--neon-blue) !important;
+  box-shadow: 0 0 14px rgba(5, 217, 232, 0.3) !important;
+  margin-top: 4px;
+}
+
+.jack-in-btn:hover {
+  background: rgba(5, 217, 232, 0.2) !important;
+  box-shadow: 0 0 22px rgba(5, 217, 232, 0.6) !important;
+}
+
+.ai-name-display {
+  text-align: center;
+  pointer-events: none;
+  background: transparent !important;
+  border: none !important;
+  cursor: default !important;
+}
+
+.player-side.right {
+  overflow: visible !important;
+}
+
+.ai-dialogue {
+  margin-top: 8px;
+  width: 130px;
+  z-index: 10;
+}
+
+@media (min-width: 769px) {
+  #players-setup { flex-wrap: nowrap !important; }
+  .right-slot { width: 240px; }
+  .mode-center-panel { width: 140px; }
+}
+
+@media (max-width: 768px) {
+  #players-setup {
+    flex-wrap: wrap !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .right-slot { width: min(240px, 88vw); }
+  .mode-center-panel {
+    width: min(320px, 88vw);
+    order: 3;
+  }
+  .mode-buttons-stack {
+    flex-direction: row;
+    justify-content: center;
+  }
+  .mode-btn {
+    width: auto !important;
+    min-width: 90px !important;
+    font-size: 10px !important;
+  }
+  .jack-in-btn { width: 160px !important; }
+  .mode-panel-inner { padding: 10px; gap: 8px; }
+}

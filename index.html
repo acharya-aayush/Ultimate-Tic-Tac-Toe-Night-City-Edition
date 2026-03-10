@@ -96,9 +96,11 @@
       <!-- Content hidden as we're using side panels instead -->
     </div>
     
-    <!-- Player setup screen -->
+    <!-- Player setup screen: 3-column [P1] [MODE] [P2/AI] -->
     <div id="players-setup" class="players-container">
-      <div class="player-setup">
+
+      <!-- ── P1 CARD ── -->
+      <div class="player-setup" id="p1Card">
         <div class="cyber-card">
           <div class="card-corner tl"></div>
           <div class="card-corner tr"></div>
@@ -139,13 +141,38 @@
                 <img src="assets/images/rebeccapfp1.png" alt="Rebecca" class="avatar-thumb">
                 <div class="character-name">Rebecca</div>
               </button>
-            </div>
-          </div>
-        </div>
+            </div><!-- /character-select -->
+          </div><!-- /card-info -->
+        </div><!-- /cyber-card -->
+      </div><!-- /p1Card -->
+
+  <!-- ── CENTER MODE PANEL ── -->
+  <div class="mode-center-panel" id="modeCenterPanel">
+    <div class="mode-panel-inner">
+      <div class="mode-vs-label">SELECT MODE</div>
+      <div class="mode-buttons-stack">
+        <button class="cyber-button mode-btn selected-mode" id="humanGameButton">
+          <span class="button-content">2 PLAYERS</span>
+        </button>
+        <button class="cyber-button mode-btn" id="aiGameButton">
+          <span class="button-content">VS AI</span>
+        </button>
+        <button class="cyber-button mode-btn" id="onlineGameButton">
+          <span class="button-content">ONLINE</span>
+        </button>
       </div>
-      
-      <div class="player-setup">
-        <div class="cyber-card">
+      <button class="cyber-button jack-in-btn" id="jackInBtn">
+        <span class="button-content">⚡ JACK IN</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── RIGHT SLOT: P2 card (2P mode) OR AI selector (VS AI mode) ── -->
+  <div class="right-slot" id="rightSlot">
+
+    <!-- P2 Card -->
+    <div class="player-setup" id="p2Card">
+      <div class="cyber-card">
           <div class="card-corner tl"></div>
           <div class="card-corner tr"></div>
           <div class="card-corner bl"></div>
@@ -188,61 +215,55 @@
             </div>
           </div>
         </div>
-      </div>
     </div>
-    
-    <!-- Game mode selection -->
-    <div id="modeSelector" class="controls">
-      <div class="mode-buttons">
-        <button class="cyber-button main-button" id="humanGameButton">
-          <span class="button-content">2 PLAYERS</span>
-        </button>
-        <button class="cyber-button main-button" id="aiGameButton">
-          <span class="button-content">VS AI</span>
-        </button>
-        <button class="cyber-button main-button" id="onlineGameButton" onclick="window.showMultiplayerLobby && window.showMultiplayerLobby()">
-          <span class="button-content">ONLINE</span>
-        </button>
-      </div>
-      
-      <!-- AI SELECTOR -->
-      <div class="ai-selector">
-        <h3>Select AI Opponent</h3>
-        <div class="ai-options">
-          <button class="ai-option" data-ai="royce">
-            <img src="assets/ai/royce.png" alt="Royce">
-            <span>Royce</span>
-          </button>
-          <button class="ai-option" data-ai="goro">
-            <img src="assets/ai/goro.png" alt="Goro">
-            <span>Goro</span>
-          </button>
-          <button class="ai-option selected" data-ai="adamSmasher">
-            <img src="assets/ai/adamSmasher.png" alt="Adam Smasher">
-            <span>Adam Smasher</span>
-          </button>
-          <button class="ai-option locked" id="aayushAIOption" data-ai="aayushAcharya" style="display: none;">
-            <img src="assets/ai/aayush.png" alt="The Architect">
-            <span>The Architect</span>
-            <div class="lock-overlay">
-              <div class="lock-icon">🔒</div>
-            </div>
-          </button>
+
+    <!-- AI Selector Panel (shown for VS AI mode) -->
+    <div class="player-setup" id="aiSelectorPanel" style="display:none;">
+      <div class="cyber-card">
+        <div class="card-corner tl"></div>
+        <div class="card-corner tr"></div>
+        <div class="card-corner bl"></div>
+        <div class="card-corner br"></div>
+        <div class="card-top">
+          <div class="card-bg"></div>
+          <div class="player-image">
+            <img src="assets/ai/adamSmasher.png" id="aiAvatarPreview" class="avatar-preview">
+            <div class="marker">O</div>
+          </div>
+        </div>
+        <div class="card-info">
+          <div class="player-name-input ai-name-display" id="aiSelectedName">ADAM SMASHER</div>
+          <div class="character-select-label">SELECT OPPONENT</div>
+          <div class="character-select">
+            <button class="avatar-button ai-option" data-ai="royce" data-name="Royce" data-img="assets/ai/royce.png" data-difficulty="easy">
+              <img src="assets/ai/royce.png" class="avatar-thumb">
+              <div class="character-name">Royce</div>
+            </button>
+            <button class="avatar-button ai-option" data-ai="goro" data-name="Goro" data-img="assets/ai/goro.png" data-difficulty="medium">
+              <img src="assets/ai/goro.png" class="avatar-thumb">
+              <div class="character-name">Goro</div>
+            </button>
+            <button class="avatar-button ai-option active selected" data-ai="adamSmasher" data-name="Adam Smasher" data-img="assets/ai/adamSmasher.png" data-difficulty="hard">
+              <img src="assets/ai/adamSmasher.png" class="avatar-thumb">
+              <div class="character-name">A.Smasher</div>
+            </button>
+            <button class="avatar-button ai-option locked" id="aayushAIOption" data-ai="aayushAcharya" data-name="The Architect" data-img="assets/ai/aayush.png" data-difficulty="extreme" style="display:none;">
+              <img src="assets/ai/aayush.png" class="avatar-thumb">
+              <div class="character-name">Architect</div>
+              <div class="lock-overlay"><div class="lock-icon">🔒</div></div>
+            </button>
+          </div>
         </div>
       </div>
-      <!-- END AI SELECTOR -->
-      
-      <div id="aiDifficultyContainer" class="dropdown-container" style="display:none;">
-        <div class="difficulty-label">Select AI Opponent</div>
-        <div class="ai-opponents">
-          <button class="cyber-button ai-button" data-difficulty="easy">Royce<span class="difficulty-tag">EASY</span></button>
-          <button class="cyber-button ai-button" data-difficulty="medium">Goro<span class="difficulty-tag">MEDIUM</span></button>
-          <button class="cyber-button ai-button selected" data-difficulty="hard">Adam Smasher<span class="difficulty-tag">HARD</span></button>
-          <button class="cyber-button ai-button" data-difficulty="extreme">The Architect<span class="difficulty-tag">EXTREME</span></button>
-        </div>
-        <input type="hidden" id="aiDifficultySelector" value="hard">
-      </div>
     </div>
+
+  </div><!-- end .right-slot -->
+</div><!-- end #players-setup -->
+
+<!-- Hidden legacy difficulty input (used by engine.js) -->
+<input type="hidden" id="aiDifficultySelector" value="hard">
+
+
     
     <!-- Game layout with side avatars and main board -->
     <div class="game-layout" id="gameLayout" style="display:none;">
@@ -359,41 +380,51 @@
   <script>
     // Compatibility layer to ensure all functions are accessible
     window.handleModuleLoad = function() {
-      document.getElementById('humanGameButton').addEventListener('click', function() {
-        // Show both player setup cards for human vs human
-        const p2Card = document.querySelector('#players-setup .player-setup:last-child');
-        if (p2Card) p2Card.style.display = '';
-        if (typeof window.startGame === 'function') {
-          window.startGame('human');
+      // ── MODE SWITCHING HELPERS ─────────────────────────────────────
+      function setActiveMode(mode) {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected-mode'));
+        const btn = document.getElementById(mode === 'human' ? 'humanGameButton' : 'aiGameButton');
+        if (btn) btn.classList.add('selected-mode');
+        
+        const p2Card = document.getElementById('p2Card');
+        const aiPanel = document.getElementById('aiSelectorPanel');
+        const jackIn = document.getElementById('jackInBtn');
+        
+        if (mode === 'human') {
+          if (p2Card) p2Card.style.display = '';
+          if (aiPanel) aiPanel.style.display = 'none';
+          if (jackIn) jackIn.style.display = '';
+        } else if (mode === 'ai') {
+          if (p2Card) p2Card.style.display = 'none';
+          if (aiPanel) aiPanel.style.display = '';
+          if (jackIn) jackIn.style.display = 'none';
         }
+      }
+      window._currentMode = 'human'; // default
+      
+      document.getElementById('humanGameButton').addEventListener('click', function() {
+        window._currentMode = 'human';
+        setActiveMode('human');
+        if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
       });
       
       document.getElementById('aiGameButton').addEventListener('click', function() {
-        // Hide P2 setup card — AI will be the opponent
-        const p2Card = document.querySelector('#players-setup .player-setup:last-child');
-        if (p2Card) p2Card.style.display = 'none';
-
-        // Get selected AI option
-        const selectedAI = document.querySelector('.ai-option.selected');
-        if (selectedAI) {
-          const aiType = selectedAI.dataset.ai;
-          const difficultyMap = {
-            'royce': 'easy',
-            'goro': 'medium',
-            'adamSmasher': 'hard',
-            'aayushAcharya': 'extreme'
-          };
-          const difficulty = difficultyMap[aiType] || 'hard';
-          if (typeof window.selectAIDifficulty === 'function') {
-            window.selectAIDifficulty(difficulty);
-          }
-        } else {
-          // Fallback to default difficulty if no AI is selected
-          if (typeof window.selectAIDifficulty === 'function') {
-            window.selectAIDifficulty('hard');
-          }
-        }
+        window._currentMode = 'ai';
+        setActiveMode('ai');
+        if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
       });
+
+      document.getElementById('onlineGameButton').addEventListener('click', function() {
+        if (window.showMultiplayerLobby) window.showMultiplayerLobby();
+        if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
+      });
+      
+      // JACK IN → start 2P game
+      document.getElementById('jackInBtn').addEventListener('click', function() {
+        if (typeof window.startGame === 'function') window.startGame('human');
+        if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
+      });
+      
       
       // Set up continue, new match, and emergency reset buttons
       document.getElementById('continueButton').addEventListener('click', function() {
@@ -547,38 +578,36 @@
         }
       }, 300);
       
-      // Set up AI opponent selection
+      // Set up AI opponent selection (right panel)
       document.querySelectorAll('.ai-option').forEach(button => {
         button.addEventListener('click', function() {
+          if (this.classList.contains('locked')) return;
+          
           // Update selected state
-          document.querySelectorAll('.ai-option').forEach(btn => {
-            btn.classList.remove('selected');
-          });
-          this.classList.add('selected');
+          document.querySelectorAll('.ai-option').forEach(btn => btn.classList.remove('selected', 'active'));
+          this.classList.add('selected', 'active');
           
-          // Get AI data
-          const aiType = this.dataset.ai;
+          // Update AI panel preview
+          const aiImg = this.dataset.img;
+          const aiName = this.dataset.name;
+          const preview = document.getElementById('aiAvatarPreview');
+          const nameEl = document.getElementById('aiSelectedName');
+          if (preview && aiImg) preview.src = aiImg;
+          if (nameEl && aiName) nameEl.textContent = aiName.toUpperCase();
           
-          // Map AI types to difficulty levels
-          const difficultyMap = {
-            'royce': 'easy',
-            'goro': 'medium',
-            'adamSmasher': 'hard',
-            'aayushAcharya': 'extreme'
-          };
-          
-          // Select corresponding difficulty
-          const difficulty = difficultyMap[aiType] || 'hard';
-          
-          // Update hidden input value
-          document.getElementById('aiDifficultySelector').value = difficulty;
-          
-          // Play UI sound if available
-          if (window.audioSystem) {
-            window.audioSystem.playSound('ui', 'click');
+          // Flash preview
+          if (preview) {
+            const pi = preview.closest('.player-image');
+            if (pi) { pi.classList.add('selected'); setTimeout(() => pi.classList.remove('selected'), 500); }
           }
           
-          // If selectAIDifficulty function exists, call it
+          const difficulty = this.dataset.difficulty || 'hard';
+          const aiDiffInput = document.getElementById('aiDifficultySelector');
+          if (aiDiffInput) aiDiffInput.value = difficulty;
+          
+          if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
+          
+          // Start game with selected AI
           if (typeof window.selectAIDifficulty === 'function') {
             window.selectAIDifficulty(difficulty);
           }
