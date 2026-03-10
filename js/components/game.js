@@ -10,6 +10,9 @@ import { glitchElement, applyMajorGlitch } from '../utils/glitchEffects.js';
 import { recordAdamSmasherDefeat } from '../../script.js';
 import { resetSession, recordMove, finalizeGame } from '../utils/moveTracker.js';
 import { showAIDialogue } from '../ai/dialogues.js';
+import { timedModeActive, startMoveTimer, stopTimer } from '../timer.js';
+import { isTournamentActive, recordTournamentGame, showTournamentBracket, hideTournamentBracket } from '../tournament.js';
+import { recordStreakWin, recordStreakLoss, applySkin } from '../streak.js';
 
 // Lazy import for multiplayer send helper (avoids circular deps)
 let _sendMove = null;
@@ -30,6 +33,10 @@ const aiDifficultySelector = document.getElementById('aiDifficultySelector');
 
 // Start the game with the selected mode
 export function startGame(mode) {
+  // Apply any unlocked streak skin to the board
+  applySkin();
+  // Hide tournament bracket if open (about to start next game)
+  hideTournamentBracket();
   // Get player names from input fields and apply any manual changes
   const player1Input = document.getElementById('player1Name');
   const player2Input = document.getElementById('player2Name');
@@ -171,6 +178,7 @@ export function resetGame() {
 
 // Emergency reset - bypasses normal game flow to reset everything
 export function emergencyReset() {
+  stopTimer();
   // Reset all game state
   window.gameMode = null;
   window.currentPlayer = 'X';
@@ -259,6 +267,10 @@ export function handleMove(bi, ci, cell) {
   if (window.gameMode === 'online' && !window._remoteMove && _sendMove) {
     _sendMove(bi, ci);
   }
+
+  // Stop the move timer as soon as a valid move is registered
+  stopTimer();
+
   // Place marker with animation effect
   placeMarkerWithEffect(cell, window.currentPlayer);
   recordMove(window.currentPlayer, bi, ci, window.boardWinners, window.nextBoard);
@@ -329,7 +341,13 @@ export function handleMove(bi, ci, cell) {
     window.currentPlayer = window.currentPlayer === 'X' ? 'O' : 'X';
     // Update UI with highlight effects immediately to avoid race conditions
     updateHighlight();
-    
+
+    // Restart move timer for the next player (skip when AI is about to move)
+    if (timedModeActive && window.gameInProgress &&
+        !(window.gameMode === 'ai' && window.currentPlayer === 'O')) {
+      startMoveTimer(10, handleTimerExpiry);
+    }
+
     // Only make AI move if the game is still in progress
     if (window.gameMode === 'ai' && window.currentPlayer === 'O' && window.gameInProgress) {
       setTimeout(aiMove, 700); // Longer delay for AI moves to build anticipation
@@ -340,9 +358,78 @@ export function handleMove(bi, ci, cell) {
   updatePlayerUI();
 }
 
+// ── Timer expiry handler ───────────────────────────────────────────────────
+function handleTimerExpiry() {
+  if (!window.gameInProgress) return;
+
+  const timedOut = window.currentPlayer;
+  const opponent = timedOut === 'X' ? 'O' : 'X';
+  const timedOutName = timedOut === 'X' ? window.player1Name : window.player2Name;
+
+  // Forfeit the specific target board if there is one; otherwise skip the turn
+  if (window.nextBoard !== -1 && !window.boardWinners[window.nextBoard]) {
+    const bIdx = window.nextBoard;
+    window.boardWinners[bIdx] = opponent;
+    const boardEl = window.boards[bIdx].element;
+    boardEl.classList.add('won', opponent === 'X' ? 'won-x' : 'won-o');
+
+    const existing = boardEl.querySelector('.giant-symbol');
+    if (existing) existing.remove();
+    const sym = document.createElement('div');
+    sym.className   = `giant-symbol ${opponent}`;
+    sym.textContent = opponent;
+    boardEl.appendChild(sym);
+
+    showNotification(`⏰ ${timedOutName} ran out of time! Board forfeited.`, 3000);
+
+    // Check if forfeiting this board wins the game
+    if (checkGameWin(opponent)) {
+      const winnerName = opponent === 'X' ? window.player1Name : window.player2Name;
+      const loserName  = timedOut  === 'X' ? window.player1Name : window.player2Name;
+      applyMajorGlitch();
+      if (opponent === 'X') { window.player1Record[0]++; window.player2Record[1]++; }
+      else                  { window.player2Record[0]++; window.player1Record[1]++; }
+      showWinner(winnerName, opponent);
+      if (window.gameMode === 'ai' && window.selectedAIBot) {
+        showAIDialogue(window.selectedAIBot, opponent === 'O' ? 'victory' : 'defeat');
+      }
+      window.score[opponent]++;
+      updateScoreboard();
+      window.gameInProgress = false;
+      setTimeout(() => { controls.style.display = 'flex'; }, 500);
+      if (window.audioSystem) window.audioSystem.playGameWinSound();
+      finalizeGame(opponent);
+      // Tournament + Streak accounting
+      if (isTournamentActive()) { const over = recordTournamentGame(opponent); if (!over) setTimeout(() => showTournamentBracket(), 1000); }
+      recordStreakWin(winnerName);
+      recordStreakLoss(loserName);
+      return;
+    }
+  } else {
+    showNotification(`⏰ ${timedOutName}'s time is up! Turn skipped.`, 3000);
+  }
+
+  // Switch player
+  window.currentPlayer = opponent;
+  window.nextBoard     = -1;
+  updateHighlight();
+  if (checkForDraw()) return;
+
+  // Restart timer for next human turn
+  if (timedModeActive && window.gameInProgress &&
+      !(window.gameMode === 'ai' && window.currentPlayer === 'O')) {
+    startMoveTimer(10, handleTimerExpiry);
+  }
+
+  // AI move if needed
+  if (window.gameMode === 'ai' && window.currentPlayer === 'O' && window.gameInProgress) {
+    setTimeout(aiMove, 700);
+  }
+  updatePlayerUI();
+}
+
 // Check if a mini-board is won
-export function checkMiniWin(board, p) {
-  const g = board.cells.map(c => c.textContent);
+export function checkMiniWin(board, p) {  const g = board.cells.map(c => c.textContent);
   const win = WIN_PATTERNS;
   const hasWin = win.some(line => line.every(i => g[i] === p));
   
@@ -459,6 +546,19 @@ export function handleBoardWin(boardIndex, player) {
     }
     
     finalizeGame(player);
+
+    // ── Tournament tracking ──
+    if (isTournamentActive()) {
+      const seriesOver = recordTournamentGame(player);
+      if (!seriesOver) setTimeout(() => showTournamentBracket(), 1000);
+    }
+
+    // ── Streak / Bounty tracking ──
+    const winnerName = player === 'X' ? window.player1Name : window.player2Name;
+    const loserName  = player === 'X' ? window.player2Name : window.player1Name;
+    recordStreakWin(winnerName);
+    recordStreakLoss(loserName);
+
     return true;
   }
   
@@ -559,6 +659,13 @@ export function checkForDraw() {
     }
     
     finalizeGame('draw');
+
+    // ── Tournament tracking for draw ──
+    if (isTournamentActive()) {
+      const seriesOver = recordTournamentGame(null);
+      if (!seriesOver) setTimeout(() => showTournamentBracket(), 1000);
+    }
+
     return true;
   }
   
@@ -582,6 +689,7 @@ export function continueGame() {
 
 // Go back to setup screen
 export function backToSetup() {
+  stopTimer();
   controls.style.display = 'none';
   winnerDisplay.style.display = 'none';
   mainBoard.style.display = 'none';

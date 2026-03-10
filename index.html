@@ -104,7 +104,30 @@
         <button class="cyber-button mode-btn" id="onlineGameButton">
           <span class="button-content">ONLINE</span>
         </button>
+        <button class="cyber-button mode-btn" id="tournamentBtn">
+          <span class="button-content">🏆 TOURNEY</span>
+        </button>
       </div>
+
+      <!-- Timed mode toggle -->
+      <div class="timed-toggle-row">
+        <span class="timed-label">⏱ TIMED</span>
+        <button id="timedModeToggle" class="timed-toggle" title="10-second move timer — exceed it and forfeit the board">OFF</button>
+      </div>
+
+      <!-- Tournament format picker (visible only in TOURNEY mode) -->
+      <div id="tournamentFormatPicker" class="tournament-format-picker hidden">
+        <div class="format-label">SELECT FORMAT</div>
+        <div class="format-btns">
+          <button id="tournBo3Btn" class="cyber-button small-button">
+            <span class="button-content">BEST OF 3</span>
+          </button>
+          <button id="tournBo5Btn" class="cyber-button small-button">
+            <span class="button-content">BEST OF 5</span>
+          </button>
+        </div>
+      </div>
+
       <button class="cyber-button jack-in-btn" id="jackInBtn">
         <span class="button-content">⚡ JACK IN</span>
       </button>
@@ -222,6 +245,11 @@
       
       <!-- Main game board -->
       <div id="mainBoard" class="board"></div>
+
+      <!-- Per-move countdown timer (Timed Mode) -->
+      <div id="move-timer" class="move-timer hidden" aria-label="Move timer">
+        <span class="timer-count">10</span>
+      </div>
       
       <!-- Player 2 side avatar -->
       <div class="player-side right">
@@ -256,6 +284,12 @@
       </button>
       <button class="cyber-button" id="newMatchButton">
         <span class="button-content">NEW MATCH</span>
+      </button>
+      <button class="cyber-button" id="replayBtn">
+        <span class="button-content">⏮ REPLAY</span>
+      </button>
+      <button class="cyber-button" id="replayShareBtn">
+        <span class="button-content">🔗 SHARE</span>
       </button>
       <button class="cyber-button" onclick="window.downloadGameMoves('json')">
         <span class="button-content">DOWNLOAD MOVES</span>
@@ -307,6 +341,82 @@
     </div>
   </div>
   
+  <!-- ─── Streak banner (floating, bottom-center) ─── -->
+  <div id="streak-banner" class="streak-banner hidden"></div>
+
+  <!-- ─── Tournament bracket overlay ─── -->
+  <div id="tournament-overlay" class="tournament-overlay hidden">
+    <div class="tournament-panel cyber-card">
+      <div class="card-corner tl"></div>
+      <div class="card-corner tr"></div>
+      <div class="card-corner bl"></div>
+      <div class="card-corner br"></div>
+      <div class="tourn-meta">
+        <span id="tourn-best-of">BEST OF 3</span>
+        <span id="tourn-game-count">GAME 1</span>
+      </div>
+      <div class="tourn-scores">
+        <div class="tourn-player">
+          <div class="tourn-player-name" id="tourn-p1-name">PLAYER 1</div>
+          <div class="tourn-score" id="tourn-p1-score">0</div>
+          <div class="tourn-pips" id="tourn-p1-pips"></div>
+        </div>
+        <div class="tourn-vs">VS</div>
+        <div class="tourn-player">
+          <div class="tourn-player-name" id="tourn-p2-name">PLAYER 2</div>
+          <div class="tourn-score" id="tourn-p2-score">0</div>
+          <div class="tourn-pips" id="tourn-p2-pips"></div>
+        </div>
+      </div>
+      <button class="cyber-button" id="tourn-next-game-btn">
+        <span class="button-content">▶ NEXT GAME</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── Bounty poster (tournament winner) ─── -->
+  <div id="bounty-poster" class="bounty-poster hidden">
+    <div class="bounty-content">
+      <div class="bounty-header">WANTED</div>
+      <div class="bounty-subheader">TOURNAMENT CHAMPION</div>
+      <img id="bounty-avatar" class="bounty-avatar" src="" alt="Champion">
+      <div class="bounty-dead-or-alive">DEAD OR ALIVE</div>
+      <div class="bounty-winner-name" id="bounty-winner-name">CHAMPION</div>
+      <div class="bounty-series" id="bounty-series">2 — 0</div>
+      <div class="bounty-series-info" id="bounty-series-info">BEST OF 3</div>
+      <div class="bounty-reward">⚡ ED&nbsp;50,000 ⚡</div>
+      <button class="cyber-button" id="bounty-close-btn">
+        <span class="button-content">CLOSE</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── Ghost Replay overlay ─── -->
+  <div id="replay-overlay" class="replay-overlay hidden">
+    <div class="replay-header">
+      <span class="replay-title">⏮ GHOST REPLAY</span>
+      <span id="replay-mode">GAME</span>
+      <span id="replay-winner">WINNER</span>
+    </div>
+    <div class="replay-controls">
+      <button id="replay-play-pause" class="icon-button">⏸</button>
+      <span id="replay-move-counter">0 / 0</span>
+      <button id="replay-speed-btn" class="cyber-button small-button">
+        <span class="button-content"><span id="replay-speed-label">1×</span> SPEED</span>
+      </button>
+      <button id="replay-close" class="icon-button" title="Exit replay">✕</button>
+    </div>
+    <div class="replay-upload-row">
+      <button id="replay-last-game" class="cyber-button small-button">
+        <span class="button-content">⟳ LAST GAME</span>
+      </button>
+      <button id="replay-upload-btn" class="cyber-button small-button">
+        <span class="button-content">📁 LOAD FILE</span>
+      </button>
+    </div>
+  </div>
+  <input type="file" id="replay-file-input" accept=".json,.csv" class="hidden">
+
   <!-- Aayush AI unlock notification -->
   <div id="unlockNotification" class="unlock-notification" style="display:none;">
     <div class="notification-content">

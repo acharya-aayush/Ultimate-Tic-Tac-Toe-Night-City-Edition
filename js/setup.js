@@ -7,6 +7,8 @@
  */
 
 import { showAIDialogue } from './ai/dialogues.js';
+import { setTimedMode } from './timer.js';
+import { initTournament, hideTournamentBracket, closeBountyPoster } from './tournament.js';
 
 // ── State ────────────────────────────────────────────────────────────────────
 let currentMode = 'human'; // 'human' | 'ai'
