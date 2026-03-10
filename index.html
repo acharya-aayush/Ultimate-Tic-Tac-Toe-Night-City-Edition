@@ -63,6 +63,7 @@
     }
   </script>
  <script>window.MULTIPLAYER_SERVER_URL = 'wss://ultimate-tic-tac-toe-night-city-edition.onrender.com';</script>
+</head>
 <body>
   <div class="cyberpunk-container">
     <!-- Digital grid background -->
@@ -221,8 +222,8 @@
             <span>Adam Smasher</span>
           </button>
           <button class="ai-option locked" id="aayushAIOption" data-ai="aayushAcharya" style="display: none;">
-            <img src="assets/ai/aayush.png" alt="AAYUSH">
-            <span>AAYUSH</span>
+            <img src="assets/ai/aayush.png" alt="The Architect">
+            <span>The Architect</span>
             <div class="lock-overlay">
               <div class="lock-icon">🔒</div>
             </div>
@@ -237,7 +238,7 @@
           <button class="cyber-button ai-button" data-difficulty="easy">Royce<span class="difficulty-tag">EASY</span></button>
           <button class="cyber-button ai-button" data-difficulty="medium">Goro<span class="difficulty-tag">MEDIUM</span></button>
           <button class="cyber-button ai-button selected" data-difficulty="hard">Adam Smasher<span class="difficulty-tag">HARD</span></button>
-          <button class="cyber-button ai-button" data-difficulty="extreme">Aayush Acharya<span class="difficulty-tag">EXTREME</span></button>
+          <button class="cyber-button ai-button" data-difficulty="extreme">The Architect<span class="difficulty-tag">EXTREME</span></button>
         </div>
         <input type="hidden" id="aiDifficultySelector" value="hard">
       </div>
@@ -264,6 +265,8 @@
           <div class="side-marker player2">O</div>
         </div>
         <div class="side-name" id="sideName2">PLAYER 2</div>
+        <!-- AI dialogue bubble (visible only vs AI) -->
+        <div id="ai-dialogue" class="ai-dialogue" style="display:none;"></div>
       </div>
     </div>
     
@@ -356,18 +359,20 @@
   <script>
     // Compatibility layer to ensure all functions are accessible
     window.handleModuleLoad = function() {
-      console.log("Setting up game event handlers");
-      
-      // Set up event handlers for game controls
       document.getElementById('humanGameButton').addEventListener('click', function() {
+        // Show both player setup cards for human vs human
+        const p2Card = document.querySelector('#players-setup .player-setup:last-child');
+        if (p2Card) p2Card.style.display = '';
         if (typeof window.startGame === 'function') {
           window.startGame('human');
-        } else {
-          console.error("startGame function not found");
         }
       });
       
       document.getElementById('aiGameButton').addEventListener('click', function() {
+        // Hide P2 setup card — AI will be the opponent
+        const p2Card = document.querySelector('#players-setup .player-setup:last-child');
+        if (p2Card) p2Card.style.display = 'none';
+
         // Get selected AI option
         const selectedAI = document.querySelector('.ai-option.selected');
         if (selectedAI) {
@@ -379,19 +384,13 @@
             'aayushAcharya': 'extreme'
           };
           const difficulty = difficultyMap[aiType] || 'hard';
-          
-          // Call selectAIDifficulty with the mapped difficulty
           if (typeof window.selectAIDifficulty === 'function') {
             window.selectAIDifficulty(difficulty);
-          } else {
-            console.error("selectAIDifficulty function not found");
           }
         } else {
           // Fallback to default difficulty if no AI is selected
           if (typeof window.selectAIDifficulty === 'function') {
             window.selectAIDifficulty('hard');
-          } else {
-            console.error("selectAIDifficulty function not found");
           }
         }
       });
@@ -401,7 +400,6 @@
         if (typeof window.continueGame === 'function') {
           window.continueGame();
         } else {
-          console.error("continueGame function not found");
         }
       });
       
@@ -409,7 +407,6 @@
         if (typeof window.backToSetup === 'function') {
           window.backToSetup();
         } else {
-          console.error("backToSetup function not found");
         }
       });
       
@@ -417,7 +414,6 @@
         if (typeof window.emergencyReset === 'function') {
           window.emergencyReset();
         } else {
-          console.error("emergencyReset function not found");
         }
       });
       
@@ -425,9 +421,7 @@
       document.getElementById('nextTrack').addEventListener('click', function() {
         if (typeof window.nextTrack === 'function') {
           window.nextTrack();
-          console.log("Skipping to next music track");
         } else {
-          console.error("nextTrack function not found");
         }
       });
       
@@ -436,7 +430,6 @@
         if (typeof window.toggleMusic === 'function') {
           window.toggleMusic();
         } else {
-          console.error("toggleMusic function not found");
         }
       });
       
@@ -444,7 +437,6 @@
         if (typeof window.toggleSFX === 'function') {
           window.toggleSFX();
         } else {
-          console.error("toggleSFX function not found");
         }
       });
       
@@ -594,7 +586,6 @@
       });
     };
     function playUnlockAnimation() {
-      console.log("Unlock animation started"); // Debugging line
       // Create unlock sequence container
       const unlockSequence = document.createElement('div');
       unlockSequence.className = 'unlock-sequence';
@@ -615,7 +606,7 @@
       // Create glitch text
       const glitchText = document.createElement('div');
       glitchText.className = 'glitch-text';
-      glitchText.textContent = 'UNLOCKING AAYUSH AI';
+      glitchText.textContent = 'UNLOCKING THE ARCHITECT';
       unlockSequence.appendChild(glitchText);
       
       // Create progress bar
@@ -634,7 +625,6 @@
       
       // Add to body
       document.body.appendChild(unlockSequence);
-      console.log("Unlock sequence added to the DOM"); // Debugging line
       
       // Stop background music
       if (bgMusic) {
@@ -643,7 +633,7 @@
       
       // Play unlock sound
       unlockAudio = new Audio('assets/audio/aayushunlock.mp3'); // Use your existing sound file
-      unlockAudio.play().catch(error => console.log('Audio play failed:', error));
+      unlockAudio.play().catch(() => {});
       
       // Handle skip functionality
       let unlockClickCount = 0;
@@ -670,7 +660,7 @@
         
         // Resume background music if it exists
         if (bgMusic) {
-            bgMusic.play().catch(error => console.log('Background music play failed:', error));
+            bgMusic.play().catch(() => {});
         }
         
         // Remove unlock sequence
@@ -762,6 +752,5 @@
     import { initMultiplayer } from './js/multiplayer/client.js';
     document.addEventListener('DOMContentLoaded', initMultiplayer);
   </script>
-  <button onclick="playUnlockAnimation()">Test Unlock Animation</button>
 </body>
 </html> 

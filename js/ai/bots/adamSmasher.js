@@ -57,8 +57,6 @@ export function makeAdamSmasherMove(validBoards) {
   
   // If no good move found, fall back to a simple strategy
   if (bestMoveBoard === null) {
-    console.log(`%c[ADAM SMASHER] Resorting to basic combat protocols.`, 
-                "color: #FDFE03; font-style: italic;");
     return makeRoyceMove(validBoards);
   }
   
@@ -71,10 +69,6 @@ export function makeAdamSmasherMove(validBoards) {
     "Your defeat is inevitable, meatbag."
   ];
   const aiMessage = messages[Math.floor(Math.random() * messages.length)];
-  console.log(`%c[ADAM SMASHER] ${aiMessage}`, "color: #FDFE03; font-style: italic;");
-  
-  console.log(`[ADAM SMASHER] Choosing board ${bestMoveBoard}, cell ${bestMoveCell} with score ${bestScore}`);
-  
   // Execute the move
   return executeMove(bestMoveBoard, bestMoveCell);
 }

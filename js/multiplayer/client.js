@@ -6,6 +6,7 @@ let myPlayerNumber = null;
 let connected      = false;
 let waitTimer      = null;
 let promptTimer    = null;
+let _intentionalClose = false;
 
 function getServerURL() {
   if (window.MULTIPLAYER_SERVER_URL) return window.MULTIPLAYER_SERVER_URL;
@@ -28,7 +29,7 @@ function startWaitTimer() {
   waitTimer = setTimeout(() => {
     clearWaitTimers();
     showNotification('No opponent found after 30 minutes. Starting AI game…', 5000);
-    if (socket) socket.close();
+    if (socket) { _intentionalClose = true; socket.close(); }
     setTimeout(() => { hideLobby(); startGame('ai'); }, 3500);
   }, 30 * 60 * 1000);
 }
@@ -57,7 +58,7 @@ export function requestRematch() {
 }
 
 function connect(onOpen) {
-  if (socket) { socket.close(); socket = null; }
+  if (socket) { _intentionalClose = true; socket.close(); socket = null; }
 
   const url = getServerURL();
   socket = new WebSocket(url);
@@ -76,6 +77,7 @@ function connect(onOpen) {
 
   socket.addEventListener('close', () => {
     connected = false;
+    if (_intentionalClose) { _intentionalClose = false; return; }
     if (window.gameMode === 'online') {
       showNotification('Connection lost. Return to lobby to reconnect.', 6000);
       showLobby();
@@ -107,8 +109,6 @@ function handleServerMessage(msg) {
       window.onlinePlayerNumber = myPlayerNumber;
       hideLobby();
       startGame('online');
-      console.log(`%c[MULTIPLAYER] Game started as Player ${myPlayerNumber}`,
-        'color:#00F9FF;font-weight:bold;');
       break;
 
     case 'move': {
@@ -235,14 +235,14 @@ function setupLobbyUI() {
   document.getElementById('mp-join-back-btn').addEventListener('click', () => showLobbyStep('choose'));
   document.getElementById('mp-waiting-back-btn').addEventListener('click', () => {
     clearWaitTimers();
-    if (socket) socket.close();
+    if (socket) { _intentionalClose = true; socket.close(); }
     showLobbyStep('choose');
   });
 
   // Play vs AI while waiting
   document.getElementById('mp-play-ai-btn').addEventListener('click', () => {
     clearWaitTimers();
-    if (socket) socket.close();
+    if (socket) { _intentionalClose = true; socket.close(); }
     hideLobby();
     startGame('ai');
   });

@@ -11,8 +11,6 @@ import { initRandomGlitches, applyMajorGlitch, glitchElement } from './utils/gli
 
 // Initialize when page is loaded
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Main.js loaded and initialized');
-
   createCircuitLines();
   setInterval(applyTimedGlitch, 7000); // Periodically apply glitch effect
   
@@ -76,8 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (window.audioSystem) {
         window.audioSystem.playSound('ui', 'click');
       }
-      
-      console.log(`Player ${player} selected ${characterName} (${avatar})`);
     });
   });
 

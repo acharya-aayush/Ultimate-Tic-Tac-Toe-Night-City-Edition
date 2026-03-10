@@ -18,8 +18,6 @@ const DEFAULT_BOT = 'adamSmasher';
 export function initAI() {
   // Set default bot if not already set
   window.selectedAIBot = window.selectedAIBot || DEFAULT_BOT;
-  console.log(`AI Engine initialized with bot: ${window.selectedAIBot}`);
-  
   // Initialize Aayush move logging system
   setupMoveLogExport();
   
@@ -107,9 +105,6 @@ export function selectAIDifficulty(level) {
     aayushAcharya: "color: #FF00FF; font-weight: bold;"
   };
   
-  console.log(`%c[${window.selectedAIBot.toUpperCase()}] AI opponent selected (${difficultyLevel} difficulty)`, 
-             botStyles[window.selectedAIBot] || "color: white;");
-             
   // Start game with AI
   window.startGame('ai');
 }
@@ -128,7 +123,6 @@ export function aiMove() {
   
   // If no valid moves, game is done
   if (validBoards.length === 0) {
-    console.log("[AI] No valid moves available, game should be a draw");
     return;
   }
   
@@ -162,7 +156,6 @@ export function getValidBoards() {
     
   // Safety check: if no valid boards (shouldn't happen normally, but let's be safe)
   if (validBoards.length === 0) {
-    console.log("[AI] No valid boards found, using any non-won board");
     validBoards = window.boards.map((b, i) => window.boardWinners[i] ? null : i).filter(i => i !== null);
   }
   
