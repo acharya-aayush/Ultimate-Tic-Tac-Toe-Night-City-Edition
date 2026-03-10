@@ -29,12 +29,13 @@ function updatePlayerSidePanel(playerNum, playerName, playerCharacter, playerRec
       sideAvatar.src = aiImagePath;
       // Add fallback in case the image doesn't exist
       sideAvatar.onerror = function() {
-        this.src = 'assets/images/adamsmasherpfp.png';
+        this.src = 'assets/ai/adamSmasher.png';
+        this.onerror = null;
       };
     } else {
       // Regular player - use the avatar paths from window object
       sideAvatar.src = window.avatarPaths[playerCharacter] || 
-                      (playerNum === 1 ? 'assets/images/jspfp1.png' : 'assets/images/adamsmasherpfp.png');
+                      (playerNum === 1 ? 'assets/images/jspfp1.png' : 'assets/images/lucypfp1.png');
     }
   }
 }
@@ -78,13 +79,15 @@ export function updatePlayerUI() {
       player2Image.src = aiImagePath;
       // Add fallback in case the image doesn't exist
       player2Image.onerror = function() {
-        this.src = 'assets/images/adamsmasherpfp.png';
+        this.src = 'assets/ai/adamSmasher.png';
+        this.onerror = null;
       };
     } else {
       // Regular player - use the avatar paths from window object
-      player2Image.src = window.avatarPaths[window.player2Character] || 'assets/images/adamsmasherpfp.png';
+      player2Image.src = window.avatarPaths[window.player2Character] || 'assets/images/lucypfp1.png';
       player2Image.onerror = function() {
-        this.src = 'assets/images/adamsmasherpfp.png';
+        this.src = 'assets/images/lucypfp1.png';
+        this.onerror = null;
       };
     }
   }

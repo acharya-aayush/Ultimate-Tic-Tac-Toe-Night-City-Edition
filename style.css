@@ -2694,6 +2694,15 @@ body::-webkit-scrollbar,
   font-size: 11px !important;
   letter-spacing: 1.5px;
   padding: 0 8px !important;
+  /* Smaller corner cut so text isn't clipped on short buttons */
+  clip-path: polygon(
+    0 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% 100%,
+    6px 100%,
+    0 calc(100% - 6px)
+  ) !important;
 }
 
 .mode-btn.selected-mode {

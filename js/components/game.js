@@ -52,8 +52,8 @@ export function startGame(mode) {
     const aiAvatars = {
       'royce': { name: 'Royce', avatar: 'royce', character: 'royce' },
       'goro': { name: 'Goro', avatar: 'goro', character: 'goro' },
-      'adamSmasher': { name: 'Adam Smasher', avatar: 'adam', character: 'adam' },
-      'aayushAcharya': { name: 'The Architect', avatar: 'aayush', character: 'aayush' }
+      'adamSmasher': { name: 'Adam Smasher', avatar: 'adamSmasher', character: 'adamSmasher' },
+      'aayushAcharya': { name: 'The Architect', avatar: 'architect', character: 'architect' }
     };
     
     // Get the selected AI from the window variable
@@ -400,7 +400,7 @@ function handleTimerExpiry() {
       if (window.audioSystem) window.audioSystem.playGameWinSound();
       finalizeGame(opponent);
       // Tournament + Streak accounting
-      if (isTournamentActive()) { const over = recordTournamentGame(opponent); if (!over) setTimeout(() => showTournamentBracket(), 1000); }
+      if (isTournamentActive()) recordTournamentGame(opponent);
       recordStreakWin(winnerName);
       recordStreakLoss(loserName);
       return;
@@ -548,10 +548,7 @@ export function handleBoardWin(boardIndex, player) {
     finalizeGame(player);
 
     // ── Tournament tracking ──
-    if (isTournamentActive()) {
-      const seriesOver = recordTournamentGame(player);
-      if (!seriesOver) setTimeout(() => showTournamentBracket(), 1000);
-    }
+    if (isTournamentActive()) recordTournamentGame(player);
 
     // ── Streak / Bounty tracking ──
     const winnerName = player === 'X' ? window.player1Name : window.player2Name;
@@ -661,10 +658,7 @@ export function checkForDraw() {
     finalizeGame('draw');
 
     // ── Tournament tracking for draw ──
-    if (isTournamentActive()) {
-      const seriesOver = recordTournamentGame(null);
-      if (!seriesOver) setTimeout(() => showTournamentBracket(), 1000);
-    }
+    if (isTournamentActive()) recordTournamentGame(null);
 
     return true;
   }
