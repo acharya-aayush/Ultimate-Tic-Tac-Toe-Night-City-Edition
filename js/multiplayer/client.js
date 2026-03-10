@@ -236,7 +236,7 @@ function setupLobbyUI() {
   document.getElementById('mp-waiting-back-btn').addEventListener('click', () => {
     clearWaitTimers();
     if (socket) { _intentionalClose = true; socket.close(); }
-    showLobbyStep('choose');
+    hideLobby();
   });
 
   // Play vs AI while waiting

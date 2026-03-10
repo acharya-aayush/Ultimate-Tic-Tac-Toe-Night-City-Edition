@@ -2770,6 +2770,9 @@ body::-webkit-scrollbar,
   .mode-panel-inner { padding: 10px; gap: 8px; }
 }
 
+/* ── Utility ─────────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
 /* ── Multiplayer Lobby Overlay ───────────────────────────────────── */
 .mp-lobby-overlay {
   position: fixed; inset: 0;
