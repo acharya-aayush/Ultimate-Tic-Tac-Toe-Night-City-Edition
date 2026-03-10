@@ -17,6 +17,8 @@ import { selectAIDifficulty } from './js/ai/ai.js';
 import { createCircuitLines, showMusicInfo } from './js/utils/ui.js';
 import { initSetupScreen } from './js/setup.js';
 import * as mainModule from './js/main.js';
+import { applySkin } from './js/streak.js';
+import { checkAutoReplay } from './js/replay.js';
 
 // Track initialization to prevent doubles
 let isInitialized = false;
@@ -183,6 +185,29 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize setup screen event handlers (extracted from index.html)
   initSetupScreen();
+
+  // Apply any unlocked streak skin (persists across sessions)
+  applySkin();
+
+  // Check for ?replay= URL param and auto-start replay if present
+  checkAutoReplay();
+
+  // Check for ?spectate=CODE param — auto-open online lobby to join
+  const _spectateCode = new URLSearchParams(location.search).get('spectate');
+  if (_spectateCode) {
+    setTimeout(() => {
+      if (window.showMultiplayerLobby) window.showMultiplayerLobby();
+      // Pre-fill the room code input so spectator can join
+      setTimeout(() => {
+        const codeInput = document.getElementById('mp-code-input');
+        const joinBtn   = document.getElementById('mp-join-btn');
+        if (joinBtn) joinBtn.click();
+        if (codeInput) {
+          codeInput.value = _spectateCode.toUpperCase();
+        }
+      }, 300);
+    }, 800);
+  }
 
   // Expose move log data so setup.js export dialog can read them
   window._gameMoveLogs = gameMoveLogs;

@@ -95,6 +95,8 @@ function handleServerMessage(msg) {
 
     case 'created':
       document.getElementById('mp-room-code-display').textContent = msg.roomCode;
+      // Generate and show spectate link
+      _setSpectateLink(msg.roomCode);
       showLobbyStep('waiting-for-opponent');
       break;
 
@@ -200,6 +202,13 @@ function setupLobbyUI() {
         <p class="mp-label">SHARE THIS CODE WITH YOUR OPPONENT</p>
         <div class="mp-room-code" id="mp-room-code-display">-----</div>
         <p class="mp-status">Waiting for opponent to connect…</p>
+        <!-- Spectate link row -->
+        <div class="mp-spectate-row" id="mp-spectate-row" style="display:none;">
+          <span class="mp-spectate-label">👁 SPECTATE LINK</span>
+          <button id="mp-copy-spectate-btn" class="cyber-button small-button" style="margin:0 auto;">
+            <span class="button-content">COPY LINK</span>
+          </button>
+        </div>
         <button class="cyber-button" id="mp-play-ai-btn">
           <span class="button-content">PLAY VS AI</span>
         </button>
@@ -251,6 +260,24 @@ function setupLobbyUI() {
   document.getElementById('mp-code-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('mp-join-confirm-btn').click();
   });
+
+  // Copy spectate link
+  document.getElementById('mp-copy-spectate-btn')?.addEventListener('click', () => {
+    const url = lobby.dataset.spectateUrl;
+    if (!url) return;
+    navigator.clipboard?.writeText(url)
+      .then(() => showNotification('Spectate link copied to clipboard!', 3000))
+      .catch(() => prompt('Spectate link (copy manually):', url));
+  });
+}
+
+function _setSpectateLink(roomCode) {
+  const row    = document.getElementById('mp-spectate-row');
+  const lobby  = document.getElementById('mp-lobby');
+  if (!row || !lobby) return;
+  const url = `${location.origin}${location.pathname}?spectate=${roomCode}`;
+  lobby.dataset.spectateUrl = url;
+  row.style.display = 'flex';
 }
 
 function showLobby() {

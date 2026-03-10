@@ -11,31 +11,41 @@ import { setTimedMode } from './timer.js';
 import { initTournament, hideTournamentBracket, closeBountyPoster } from './tournament.js';
 
 // ── State ────────────────────────────────────────────────────────────────────
-let currentMode = 'human'; // 'human' | 'ai'
+let currentMode = 'human'; // 'human' | 'ai' | 'tournament'
 
 export function getCurrentMode() { return currentMode; }
 
 // ── Mode switching ───────────────────────────────────────────────────────────
 function setActiveMode(mode) {
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected-mode'));
-  const btnId = mode === 'human' ? 'humanGameButton' : mode === 'ai' ? 'aiGameButton' : null;
+  const idMap = { human: 'humanGameButton', ai: 'aiGameButton', tournament: 'tournamentBtn' };
+  const btnId  = idMap[mode];
   if (btnId) {
     const btn = document.getElementById(btnId);
     if (btn) btn.classList.add('selected-mode');
   }
 
-  const p2Card  = document.getElementById('p2Card');
-  const aiPanel = document.getElementById('aiSelectorPanel');
-  const jackIn  = document.getElementById('jackInBtn');
+  const p2Card        = document.getElementById('p2Card');
+  const aiPanel       = document.getElementById('aiSelectorPanel');
+  const jackIn        = document.getElementById('jackInBtn');
+  const tournPicker   = document.getElementById('tournamentFormatPicker');
 
   if (mode === 'human') {
-    if (p2Card)  p2Card.style.display  = '';
-    if (aiPanel) aiPanel.style.display = 'none';
-    if (jackIn)  jackIn.style.display  = '';
+    if (p2Card)      p2Card.style.display      = '';
+    if (aiPanel)     aiPanel.style.display     = 'none';
+    if (jackIn)      jackIn.style.display      = '';
+    if (tournPicker) tournPicker.classList.add('hidden');
   } else if (mode === 'ai') {
-    if (p2Card)  p2Card.style.display  = 'none';
-    if (aiPanel) aiPanel.style.display = '';
-    if (jackIn)  jackIn.style.display  = 'none';
+    if (p2Card)      p2Card.style.display      = 'none';
+    if (aiPanel)     aiPanel.style.display     = '';
+    if (jackIn)      jackIn.style.display      = 'none';
+    if (tournPicker) tournPicker.classList.add('hidden');
+  } else if (mode === 'tournament') {
+    // Show P2 card so players can configure characters; hide JACK IN, show format picker
+    if (p2Card)      p2Card.style.display      = '';
+    if (aiPanel)     aiPanel.style.display     = 'none';
+    if (jackIn)      jackIn.style.display      = 'none';
+    if (tournPicker) tournPicker.classList.remove('hidden');
   }
   currentMode = mode;
   window._currentMode = mode;
@@ -170,6 +180,45 @@ export function initSetupScreen() {
   if (jackInBtn) {
     jackInBtn.addEventListener('click', () => {
       if (typeof window.startGame === 'function') window.startGame('human');
+      if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
+    });
+  }
+
+  // ---- Tournament mode button ----
+  const tournBtn = document.getElementById('tournamentBtn');
+  if (tournBtn) {
+    tournBtn.addEventListener('click', () => {
+      setActiveMode('tournament');
+      if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
+    });
+  }
+
+  // ---- Tournament format buttons ----
+  const _startTournament = (bestOf) => {
+    initTournament(bestOf);
+    if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
+    // Start the game in the appropriate base mode
+    const baseMode = currentMode === 'ai' ? 'ai' : 'human';
+    if (typeof window.startGame === 'function') window.startGame(baseMode);
+  };
+  document.getElementById('tournBo3Btn')?.addEventListener('click', () => _startTournament(3));
+  document.getElementById('tournBo5Btn')?.addEventListener('click', () => _startTournament(5));
+
+  // ---- Tournament bracket "NEXT GAME" ----
+  document.getElementById('tourn-next-game-btn')?.addEventListener('click', () => {
+    hideTournamentBracket();
+    if (typeof window.continueGame === 'function') window.continueGame();
+  });
+
+  // ---- Bounty poster "CLOSE" ----
+  document.getElementById('bounty-close-btn')?.addEventListener('click', closeBountyPoster);
+
+  // ---- Timed mode toggle ----
+  const timedToggle = document.getElementById('timedModeToggle');
+  if (timedToggle) {
+    timedToggle.addEventListener('click', () => {
+      const isOn = timedToggle.classList.contains('active');
+      setTimedMode(!isOn);
       if (window.audioSystem) window.audioSystem.playSound('ui', 'click');
     });
   }
