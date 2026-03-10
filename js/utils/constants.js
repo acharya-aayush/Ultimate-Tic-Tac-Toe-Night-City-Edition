@@ -45,7 +45,7 @@ export const AVATAR_PATHS = {
   adamSmasher: 'assets/ai/adamSmasher.png',
   royce: 'assets/ai/royce.png',
   goro: 'assets/ai/goro.png',
-  aayush: 'assets/ai/aayush.png'
+  aayush: 'assets/ai/architect.png'
 };
 
 // Character names
