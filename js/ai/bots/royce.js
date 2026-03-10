@@ -7,12 +7,14 @@
 
 import { createVirtualBoard, evaluateWinBlock, getPositionalScore } from '../evaluation.js';
 import { executeMove } from '../engine.js';
+import { showAIDialogue } from '../dialogues.js';
 
 /**
  * Make a move as Royce (Easy difficulty)
  * @param {Array} validBoards - Array of valid board indices
  */
 export function makeRoyceMove(validBoards) {
+  showAIDialogue('royce', 'taunt');
   // Randomly inject some chaos (20% chance of pure random move)
   const isFeelingSpontaneous = Math.random() < 0.2;
   if (isFeelingSpontaneous) {

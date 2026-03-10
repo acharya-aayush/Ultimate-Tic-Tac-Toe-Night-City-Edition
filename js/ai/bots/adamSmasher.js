@@ -8,12 +8,14 @@
 import { createVirtualBoard, evaluatePosition, checkVirtualBoardWin } from '../evaluation.js';
 import { executeMove } from '../engine.js';
 import { makeRoyceMove } from './royce.js';
+import { showAIDialogue } from '../dialogues.js';
 
 /**
  * Make a move as Adam Smasher (Hard difficulty)
  * @param {Array} validBoards - Array of valid board indices
  */
 export function makeAdamSmasherMove(validBoards) {
+  showAIDialogue('adamSmasher', 'taunt');
   // Track best move
   let bestScore = -Infinity;
   let bestMoveBoard = null;

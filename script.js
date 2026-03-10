@@ -15,6 +15,7 @@ import { initGlobalState } from './js/utils/constants.js';
 import { startGame, continueGame, backToSetup, emergencyReset } from './js/components/game.js';
 import { selectAIDifficulty } from './js/ai/ai.js';
 import { createCircuitLines, showMusicInfo } from './js/utils/ui.js';
+import { initSetupScreen } from './js/setup.js';
 import * as mainModule from './js/main.js';
 
 // Track initialization to prevent doubles
@@ -180,10 +181,13 @@ document.addEventListener('DOMContentLoaded', function() {
   // Check if Aayush AI is already unlocked (respecting session-only unlock)
   checkAayushUnlockStatus();
   
-  // Call the module load handler
-  if (typeof window.handleModuleLoad === 'function') {
-    window.handleModuleLoad();
-  }
+  // Initialize setup screen event handlers (extracted from index.html)
+  initSetupScreen();
+
+  // Expose move log data so setup.js export dialog can read them
+  window._gameMoveLogs = gameMoveLogs;
+  window.downloadMoveLog = downloadMoveLog;
+
   updateCharacterSelection();
   
   // Initialize background music
@@ -412,16 +416,7 @@ function unlockAayushAI(method) {
   }
 }
 
-// Update the export buttons event listeners
-document.getElementById('exportJSON').addEventListener('click', function() {
-  downloadMoveLog('json');
-  document.getElementById('moveLogDialog').style.display = 'none';
-});
-
-document.getElementById('exportCSV').addEventListener('click', function() {
-  downloadMoveLog('csv');
-  document.getElementById('moveLogDialog').style.display = 'none';
-});
+// Export buttons are now handled by js/setup.js
 
 function playUnlockAnimation() {
     // Create unlock sequence container
@@ -444,7 +439,7 @@ function playUnlockAnimation() {
     // Create glitch text
     const glitchText = document.createElement('div');
     glitchText.className = 'glitch-text';
-    glitchText.textContent = 'UNLOCKING AAYUSH AI';
+    glitchText.textContent = 'UNLOCKING THE ARCHITECT';
     unlockSequence.appendChild(glitchText);
     
     // Create progress bar

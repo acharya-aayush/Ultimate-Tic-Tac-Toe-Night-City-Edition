@@ -1,5 +1,6 @@
 ﻿import{executeMove}from'../engine.js';
 import{WIN_PATTERNS as W}from'../../utils/constants.js';
+import{showAIDialogue}from'../dialogues.js';
 const A='O',H='X',TL=3000,PW=[3,1,3,1,4,1,3,1,3];
 const ml=[];let mc=0;
 function gp(){try{return JSON.parse(localStorage['nct_profile']||'null')}catch{return null}}
@@ -88,7 +89,6 @@ function ct(w){
   for(const l of W){const ac=l.filter(i=>w[i]===A).length,hc=l.filter(i=>w[i]===H).length;if(ac===2&&!hc)ai++;if(hc===2&&!ac)h++}
   return{ai,h};
 }
-const Q=['I have seen all possible futures. This move is inevitable.','Your strategy collapsed 7 moves ago.','I already know how this ends.','Every path leads to the same conclusion.'];
 export function makeAayushAcharyaMove(){
   const s=cs(),th=ct(s.w);
   let d=(th.ai>=2||th.h>=2)?9:7;
@@ -104,7 +104,6 @@ export function makeAayushAcharyaMove(){
   const[bi,ci]=bm;
   const e={move:mc,action:bs>=100000?'WIN':th.h>=2?'CRISIS':'OPT',board:bi,cell:ci,score:bs};
   ml.push(e);if(!window.aayushMoveLog)window.aayushMoveLog=[];window.aayushMoveLog.push(e);
-  const _dlg=document.getElementById('ai-dialogue');
-  if(_dlg){_dlg.textContent=Q[mc%Q.length];_dlg.style.display='block';_dlg.classList.remove('pop');void _dlg.offsetWidth;_dlg.classList.add('pop');setTimeout(()=>{_dlg.classList.remove('pop')},3000);}
+  showAIDialogue('aayushAcharya','taunt');
   return executeMove(bi,ci);
 }

@@ -8,12 +8,14 @@
 import { createVirtualBoard, evaluateWinBlock, evaluatePosition, checkVirtualBoardWin } from '../evaluation.js';
 import { executeMove } from '../engine.js';
 import { makeRoyceMove } from './royce.js';
+import { showAIDialogue } from '../dialogues.js';
 
 /**
  * Make a move as Goro (Medium difficulty)
  * @param {Array} validBoards - Array of valid board indices
  */
 export function makeGoroMove(validBoards) {
+  showAIDialogue('goro', 'taunt');
   // 50% chance to use simple rule-based strategy (like Royce)
   // 50% chance to use a simplified minimax strategy
   const useSimpleStrategy = Math.random() < 0.5;

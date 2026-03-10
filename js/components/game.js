@@ -9,6 +9,7 @@ import { aiMove } from '../ai/ai.js';
 import { glitchElement, applyMajorGlitch } from '../utils/glitchEffects.js';
 import { recordAdamSmasherDefeat } from '../../script.js';
 import { resetSession, recordMove, finalizeGame } from '../utils/moveTracker.js';
+import { showAIDialogue } from '../ai/dialogues.js';
 
 // Lazy import for multiplayer send helper (avoids circular deps)
 let _sendMove = null;
@@ -63,10 +64,11 @@ export function startGame(mode) {
       sideAvatar2.src = `assets/ai/${aiData.avatar}.png`;
     }
     
-    // Show AI dialogue box only for The Architect
+    // Show AI dialogue box for ALL AI bots and display intro
     const aiDialogue = document.getElementById('ai-dialogue');
     if (aiDialogue) {
-      aiDialogue.style.display = selectedAI === 'aayushAcharya' ? 'block' : 'none';
+      aiDialogue.style.display = 'block';
+      showAIDialogue(selectedAI, 'intro');
     }
   } else if (mode === 'online') {
     // Online multiplayer — player number is set by the WebSocket client
@@ -82,6 +84,11 @@ export function startGame(mode) {
     // Only update player 2 name if user has manually changed it
     if (player2Input && player2Input.value.trim()) {
       window.player2Name = player2Input.value.trim();
+    }
+    // Update P2 side avatar from selected character (prevents AI portrait persisting)
+    const sideAvatar2 = document.getElementById('sideAvatar2');
+    if (sideAvatar2 && window.player2Avatar && window.avatarPaths) {
+      sideAvatar2.src = window.avatarPaths[window.player2Avatar] || '';
     }
   }
   
@@ -165,22 +172,28 @@ export function resetGame() {
 // Emergency reset - bypasses normal game flow to reset everything
 export function emergencyReset() {
   // Reset all game state
-  window.gameMode = 'ai';
+  window.gameMode = null;
   window.currentPlayer = 'X';
   window.nextBoard = -1;
   window.boards = [];
   window.boardWinners = Array(9).fill('');
-  window.gameInProgress = true;
+  window.gameInProgress = false;
   
   // Clear DOM elements
   mainBoard.innerHTML = '';
   
-  // Show the proper UI elements
+  // Show setup, hide game elements
   controls.style.display = 'none';
   winnerDisplay.style.display = 'none';
-  mainBoard.style.display = 'grid';
+  mainBoard.style.display = 'none';
   playersSetup.style.display = 'flex';
-  modeSelector.style.display = 'flex';
+  
+  // Hide AI dialogue
+  const aiDialogue = document.getElementById('ai-dialogue');
+  if (aiDialogue) aiDialogue.style.display = 'none';
+
+  // Restore default mode layout
+  if (typeof window._setActiveMode === 'function') window._setActiveMode('human');
   
   // Play UI sound
   if (window.audioSystem) {
@@ -425,6 +438,12 @@ export function handleBoardWin(boardIndex, player) {
     // Show winner animation
     showWinner(winner, player);
     
+    // Show AI dialogue for game end (victory/defeat)
+    if (window.gameMode === 'ai' && window.selectedAIBot) {
+      const category = player === 'O' ? 'victory' : 'defeat';
+      showAIDialogue(window.selectedAIBot, category);
+    }
+    
     window.score[player]++;
     updateScoreboard();
     window.gameInProgress = false;
@@ -520,6 +539,11 @@ export function checkForDraw() {
     window.player2Record[2]++; // Add draw for player 2
     
     showWinner('DRAW', 'draw');
+    
+    // AI taunt on draw
+    if (window.gameMode === 'ai' && window.selectedAIBot) {
+      showAIDialogue(window.selectedAIBot, 'taunt');
+    }
     window.score.draw++;
     updateScoreboard();
     window.gameInProgress = false;
@@ -568,17 +592,18 @@ export function backToSetup() {
 
   playersSetup.style.display = 'flex';
   
-  // Restore default 2P mode layout
-  const p2Card = document.getElementById('p2Card');
-  const aiPanel = document.getElementById('aiSelectorPanel');
-  const jackIn = document.getElementById('jackInBtn');
-  if (p2Card) p2Card.style.display = '';
-  if (aiPanel) aiPanel.style.display = 'none';
-  if (jackIn) jackIn.style.display = '';
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected-mode'));
-  const humanBtn = document.getElementById('humanGameButton');
-  if (humanBtn) humanBtn.classList.add('selected-mode');
-  if (typeof window._currentMode !== 'undefined') window._currentMode = 'human';
+  // Restore default 2P mode layout via setup.js
+  if (typeof window._setActiveMode === 'function') {
+    window._setActiveMode('human');
+  }
+
+  // Reset P2 avatar / name to defaults so AI data doesn't persist
+  const p2DefaultBtn = document.querySelector('.avatar-button[data-player="2"][data-avatar="lucy2"]');
+  if (p2DefaultBtn) {
+    document.querySelectorAll('.avatar-button[data-player="2"]').forEach(b => b.classList.remove('active'));
+    p2DefaultBtn.classList.add('active');
+    p2DefaultBtn.click();
+  }
   
   // Reset game state to make sure we start clean
   window.gameInProgress = false;
